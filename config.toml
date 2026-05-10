@@ -301,19 +301,6 @@ init_servo_setting = 500
 #                      EMAIL PARAMETERS
 #----------------------------------------------------------------
 [email]
-# sender_email
-sender_email   = "agcdhteam@gmail.com"
-
-# password
-email_password = "kcbfcsiuipdlbena"
-
-# reciever emails
-reciever_email_1 = "Clinton.Carafelli@colorado.edu"
-reciever_email_2 = "Namita.Nair@colorado.edu"
-reciever_email_3 = "Jacob.Leonard@colorado.edu"
-reciever_email_4 = "Eli.Gerber@colorado.edu"
-reciever_email_5 = "Leya.Shaw@colorado.edu"
-
 #----------------------------------------------------------------
 #                     LOG FILE MANAGMENT
 #----------------------------------------------------------------

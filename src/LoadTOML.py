@@ -1,5 +1,3 @@
-
-
 def LoadTOML(path: str) -> dict:
     """ load TOML file into a dictonary """
     try:

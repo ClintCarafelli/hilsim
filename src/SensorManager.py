@@ -1,5 +1,5 @@
 import logging
-from BaseSensor import Reading, BaseSensor, driver_registry, solution_registry
+from BaseSensor import Reading, BaseSensor, driver_registry
 from SensorExceptions import SensorInitError, SensorReadError, ConfigError, ConfigErrorHandler
  
 logger = logging.getLogger(__name__)
@@ -11,15 +11,8 @@ class SensorManager:
         self.skip_failed_init = skip_failed_init
         self.config_dict = config_dict
         self._sensors: dict[str, BaseSensor] = {}
-        self._error_solutions: dict[str, any] = {}
         self.i2c_bus = i2c_bus
         self._build_sensors(config_dict)
-
-        for error_strat in self.config_dict["sensor_error_program"].get("error_strats", []):
-            setattr(self, error_strat, {})
-            target = getattr(self, error_strat)
-            target.update(dict.fromkeys(self.config_dict["sensor_params"].get("enabled_sensors", []), 0))
-
         self.dead_sensors: bool = dict.fromkeys(self.config_dict["sensor_params"].get("enabled_sensors", []), False)
 
     def initialize_all(self) -> None: 
@@ -114,46 +107,6 @@ class SensorManager:
             driver_class = driver_registry[driver_name]
             self._sensors[sensor_id] = driver_class(sensor_id, sensor_config, self.i2c_bus)
             logger.info("Registered %s → %s", sensor_id, driver_class.__name__)
-        
-    def _build_error_methods(self, config_dict: dict) -> None:
-        all_error_strat_configs: dict = config_dict.get("sensor_error_program", [])
-
-        for error_strat in all_error_strat_configs:
-            error_strat_config = all_error_strat_configs[error_strat]
-            solution = error_strat_config.get("solution", [])
-
-            if not solution: 
-                raise ConfigErrorHandler(error_strat, "error strat issue: missing 'solution' in config.toml file")
-
-            if solution not in solution_registry:
-                raise ConfigErrorHandler(error_strat, f"Unknown driver name {solution!r} for {error_strat!r}. " 
-                    f"Registered drivers: {list(solution_registry)}")
-            
-            solution_class = solution_registry[solution]
-            self._error_solutions[error_strat] = solution_class(self.i2c_bus)
-    
-
-    def sensor_tracker(self, data: dict) -> None: 
-    
-        for error_strat in self.config_dict["sensor_error_program"].get("error_strats", []):
-            error_strat_config: dict = self.config_dict.get("sensor_error_program", {})
-
-            if error_strat_config["error_strat"]["max_successive"] == max(getattr(self, error_strat)):
-                continue
-
-            for sensor_id, readings in data.items():
-                for r in readings: 
-                    if r == None: 
-                        if self.dead_sensors[sensor_id] == True:
-                            getattr(self,error_strat)[sensor_id] = 0
-                        else: 
-                            getattr(self,error_strat)[sensor_id] = self.error_count[sensor_id]+1
-                        break
-                    else: 
-                        getattr(self,error_strat)[sensor_id] = 0
-
-                        error_strat_config: dict = self.config_dict.get("sensor_error_program", {})
-
 
             
 

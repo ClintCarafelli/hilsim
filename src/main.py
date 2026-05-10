@@ -1,8 +1,9 @@
 import os 
-from LoadTOML import LoadTOML
-import logging
-from SensorManager import SensorManager
+import logging 
 import time
+from LoadTOML import LoadTOML
+from SensorManager import SensorManager
+from pathlib import Path
 
 config_path = Path(__file__).parent.parent / "config.toml"
 config_dict = LoadTOML(config_path)

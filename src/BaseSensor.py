@@ -37,7 +37,6 @@ from BMP388Driver import BMP388Driver
 from STEMMADriver import STEMMADriver
 from ME2Driver import ME2Driver
 from INA260Driver import INA260Driver
-from SensorErrorSolutions import TransientSolution, PersistentSolution, PowerCycleSolution
 
 # Map the class that drives the sensor to the driver field in the config.toml file
 driver_registry: dict = {
@@ -49,10 +48,4 @@ driver_registry: dict = {
     "ME2_driver":     ME2Driver,
     "INA260_driver":  INA260Driver,
 }
- 
-solution_registry: dict = {
-    "transient_solution": TransientSolution,
-    "persistent_solution": PersistentSolution,
-    "power_cycle_solution": PowerCycleSolution
- }
 

@@ -8,9 +8,9 @@ from I2CBus import I2CBus
 from pathlib import Path
 
 # Create config dict 
-config_path = Path(__file__).parent.parent / "config.toml"
-config_dict = LoadTOML(config_path)
-config_dict["main_path"] = os.path.dirname(os.path.abspath(__file__))
+sensor_config_path = Path(__file__).parent.parent / "sensor_config.toml"
+sensor_config = LoadTOML(sensor_config_path)
+sensor_config["main_path"] = os.path.dirname(os.path.abspath(__file__))
 
 # Create logger 
 new_logger_name = "test_log.txt"
@@ -19,15 +19,17 @@ current_log_handler = logging.basicConfig(filename=new_logger_name,
 	format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Initialize I2C Bus
-sim_all_sensors = config_dict["sensor_params"]["sim_all"]
+sim_all_sensors = sensor_config["sensor_params"]["sim_all"]
 I2C_Handler = I2CBus(sim_all_sensors)
 i2c_bus = I2C_Handler.initialize_i2c_bus()
 
 # Create sensor manager and sensor tracker and initalize sensors
-sensor_manager = SensorManager(config_dict, i2c_bus, True)
+sensor_manager = SensorManager(sensor_config, i2c_bus, True)
 sensor_manager.initialize_all()
+sensor_tracker = SensorTracker(sensor_config)
 
-sensor_tracker = SensorTracker(config_dict)
+# General parameters
+pca = True    # defines if power cycling the USB ports is avaliable or not 
 
 while True:
     print("-"*30 + "Readings" + "-"*30)
@@ -47,10 +49,12 @@ while True:
     if error_tracking["i2c_cycle"]: 
         I2C_Handler.deinitialize_i2c_bus(i2c_bus)
         I2C_Handler.initialize_i2c_bus()
-        sensor_manager = SensorManager(config_dict, i2c_bus, True)
+        sensor_manager = SensorManager(sensor_config, i2c_bus, True)
         sensor_manager.initialize_all()
 
     if error_tracking["power_cycle_ss"]:
         pass
+        # INSERT BASH SCRIPT HERE
+
     print()
     time.sleep(2)

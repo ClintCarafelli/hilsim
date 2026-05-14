@@ -1,0 +1,301 @@
+#----------------------------------------------------------------
+#                        INTRODUCTION
+#----------------------------------------------------------------
+title = "Artemis Gardens" 
+
+[author]
+primary_author = "Clint Carafelli"
+
+# Sections: 
+#    - sensor parameters
+#    - timing
+#    - alarm system
+#    - data handling parameters
+#    - RP2040 patameters (controls)
+#    - Email parameters
+#    - log file managment
+
+#----------------------------------------------------------------
+#                      SENSOR PARAMETERS
+#----------------------------------------------------------------
+
+[sensor_params]
+# enabled sensored contains the sensor_ids
+enabled_sensors = ["SCD30", "BMP388", "STEMMA1", "STEMMA2", "STEMMA3", "ME2", "INA260"]
+sim_all         = "True"
+
+# Number describes how many subsequent erroneous readings are needed
+# to trigger the recovery method
+[sensor_error_program]
+first_i2c_cycle    = 3 
+second_i2c_cycle   = 4 
+first_power_cycle  = 5 
+second_power_cycle = 6 
+dead               = 7
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Soil sensor configurations
+[sensors.STEMMA1]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+sensor_num_measurements = 2
+sensor_num              = 1
+i2c_address             = "0x36"
+driver                  = "STEMMA1_driver"
+sim                     = "TRUE"
+failure_rate            = 0
+
+[[sensors.STEMMA1.readings]]
+name     = "moisture"
+units    = "None"
+max      = 2000
+min      = 200
+accuracy = "None"
+
+[[sensors.STEMMA1.readings]]
+name     = "temp"
+units    = "C"
+max      = -40
+min      = 85
+accuracy = 2
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[sensors.STEMMA2]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+sensor_num_measurements = 2
+sensor_num              = 1
+i2c_address             = "0x37"
+driver                  = "STEMMA2_driver"
+sim                     = "TRUE"
+failure_rate            = 0
+
+[[sensors.STEMMA2.readings]]
+name     = "moisture"
+units    = "None"
+max      = 2000
+min      = 200
+accuracy = "None"
+
+[[sensors.STEMMA2.readings]]
+name     = "temp"
+units    = "C"
+max      = -40
+min      = 85
+accuracy = 2
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[sensors.STEMMA3]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+sensor_num              = 1
+sensor_num_measurements = 2
+i2c_address             = "0x38"
+driver                  = "STEMMA3_driver"
+sim                     = "TRUE"
+failure_rate            = 0
+
+[[sensors.STEMMA3.readings]]
+name     = "moisture"
+units    = "None"
+max      = 2000
+min      = 200
+accuracy = "None"
+
+[[sensors.STEMMA3.readings]]
+name     = "temp"
+units    = "C"
+max      = -40
+min      = 85
+accuracy = 2
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# CO2 sensor configurations
+[sensors.SCD30]
+description = "Measures CO2 (ppm), relative humdity (%), and temperature (C)"
+sensor_num              = 1
+sensor_num_measurements = 3
+driver                  = "SCD30_driver"
+sim                     = "True"
+failure_rate            = 1
+
+[[sensors.SCD30.readings]]
+name     = "CO2"
+units    = "ppm"
+min      = 0
+max      = 40000
+accuracy = 30
+
+[[sensors.SCD30.readings]]
+name     = "relative_humidity"
+units    = "percent"
+min      = 0
+max      = 95
+accuracy = 3
+
+[[sensors.SCD30.readings]]
+name     = "temp"
+units    = "C"
+min      = 0
+max      = 50
+accuracy = 0.4
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Pressure sensor configurations
+[sensors.BMP388]
+description             = "measures pressure (hpa) and air temp (C)"
+sensor_num              = 1
+sensor_num_measurements = 2
+driver                  = "BMP388_driver"
+sim                     = "True"
+failure_rate            = 0
+
+[[sensors.BMP388.readings]]
+name     = "pressure"
+units    = "hpa"
+min      = 300
+max      = 1250
+accuracy = 0.50
+
+[[sensors.BMP388.readings]]
+name     = "air_temp"
+units    = "C"
+min      = 0
+max      = 65
+accuracy = 0.50
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Oxygen Sensor configurations
+[sensors.ME2]
+description             = "measures oxygen (% of air mass)"
+sensor_num              = 1
+sensor_num_measurements = 1
+collection_number       = 10
+IIC_mode                = 0x01
+i2c_address             = 0x73
+driver                  = "ME2_driver"
+sim                     = "True"
+failure_rate            = 0
+
+[[sensors.ME2.readings]]
+name     = "oxygen"
+units    = "percent"
+min      = 0
+max      = 25
+accuracy = 3.15
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Power sensor configurations
+[sensors.INA260]
+description             = "measures voltage (V), current (mA), and power (mW) using a shunt resistor"
+sensor_num              = 1
+sensor_num_measurements = 3
+driver                  = "INA260_driver" 
+sim                     = "True"
+failure_rate            = 0
+
+[[sensors.INA260.readings]]
+name     = "voltage"
+units    = "V"
+min      = 0
+max      = 40
+accuracy = 0.036
+
+[[sensors.INA260.readings]]
+name     = "current"
+units    = "mA"
+min      = 0
+max      = 15000
+accuracy = 22.5
+
+[[sensors.INA260.readings]]
+name     = "power"
+units    = "mW"
+min      = 0
+max      = 600000
+accuracy = 878.31 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+# Air Velocity configurations
+[sensors.FS3000]
+description             = "measures air velocity (meters per second)"
+sensor_num              = 1
+sensor_num_measurements = 1
+
+[sensors.FS3000.readings]
+name     = "air_velicty"
+units    = "mps"
+min      = 0
+max      = 7.83
+accuracy = 0.3615
+
+#----------------------------------------------------------------
+#                            TIMING
+#----------------------------------------------------------------
+[timing]
+# Sensor reading rate (seconds, float)
+sensor_reading_rate = 2
+
+# File times (hours, integer)
+file_time           = 4
+
+# number of flash attempts for lights
+max_flash_attempts  = 5
+
+#----------------------------------------------------------------
+#                          ALARM SYSTEM
+#----------------------------------------------------------------
+[alarms]
+# Oxygen Alarm
+ME2_warning_threshold = 22
+ME2_alarm_threshold   = 23.5
+ME2_mvl               = 50
+
+
+#----------------------------------------------------------------
+#                    DATA HANDLING PARAMETERS
+#----------------------------------------------------------------
+[paths]
+# Data paths
+save_data_dir       = "FinalIntegrationData"
+comms_data_dir      = "CommsFinal"
+comms_data_name     = "test_data.csv"
+comms_image_name    = "camera1.jpg"
+white_light_script  = "WhiteLights.sh"
+purple_light_script = "PurpleLights.sh"
+take_picture_script = "take_picture.sh"
+
+#----------------------------------------------------------------
+#                 RP2040 PARAMETERS (controls)
+#----------------------------------------------------------------
+[controls]
+# CO2 channel
+CO2_channel        = 5
+
+# Servo Channel 
+servo_channel      = 7
+servo_up_clicks    = 1100
+servo_down_clicks  = 500
+
+# General PWM settings
+PWM_100_clicks     = 20000
+PWM_0_clicks       = 0 
+
+# CO2 control (ppm)
+CO2_too_low        = 200
+
+# Humidity Control (percent)
+humidity_too_high  = 90
+humidity_too_low   = 50
+
+# Initial Servo Setting (closed):
+init_servo_setting = 500
+
+#----------------------------------------------------------------
+#                      EMAIL PARAMETERS
+#----------------------------------------------------------------
+[email]
+#----------------------------------------------------------------
+#                     LOG FILE MANAGMENT
+#----------------------------------------------------------------
+[logging]
+log_file_dir = "FinalIntegrationData"
+
+#----------------------------------------------------------------

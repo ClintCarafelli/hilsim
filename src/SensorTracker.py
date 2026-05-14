@@ -24,10 +24,10 @@ class SensorTracker():
                 continue
             no_Nones = True
             for r in readings:
-                # increment if any are None
+                # increment if any readings are None
                 if r.value is None: 
                     self.sensor_errors[sensor] += 1
-                    logging.info(f"Error detected on {sensor}, reading was {r.name} with {r.value} {r.unit}")
+                    logger.error(f"Error detected on {sensor}, reading was {r.name} with {r.value} {r.unit}")
                     no_Nones = False
                     break
             # reset error counter if no errors
@@ -80,4 +80,6 @@ class SensorTracker():
              Note that op_func is one of the operators from the operator module"""
         subset_D = {k:v for k,v in D.items() if op_func(v, x)}
         return subset_D
+    
+    
     

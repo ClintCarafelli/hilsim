@@ -11,7 +11,7 @@ class I2CBus:
 
     def initialize_i2c_bus(self) -> any:
         if self.sim_all: 
-            logger.info("Initalizing fake I2C Bus (None)")
+            logger.info("Initalizing I2C Bus")
             self.initalized_i2c = True
             return None
         else:
@@ -27,17 +27,17 @@ class I2CBus:
             except: 
                  msg = "Unable to initialize the I2C bus. Both the board and " \
                  "busio libraries are required, which follow from the installation of the adafruit_blinka" \
-                 "library. Check if these are installed."
+                 "library, Check if these are installed"
                  logger.error(msg)
                  raise I2CInitError(msg)
             
     def deinitialize_i2c_bus(self, i2c_bus: any) -> None: 
         if not self.initalized_i2c: 
-            msg = "no i2c_bus object to deinitialize."
+            msg = "no i2c_bus object to deinitialize"
             logger.error(msg)
             raise I2CDeInitError(msg)
         if self.sim_all:
-            pass
+            logger.info("Deinitialzing the I2C bus")
         else: 
             try: 
                 logger.info("Deinitializing I2C bus and freeing resources")
@@ -45,7 +45,7 @@ class I2CBus:
                 self.initialize_i2c = False
                 logger.info("successfully deinitialized I2C bus")
             except: 
-                msg = "Unable to deinitialize the current i2c bus."
+                msg = "Unable to deinitialize the current i2c bus"
                 logger.error(msg)
                 raise I2CDeInitError(msg)
         

@@ -3,27 +3,35 @@ import logging
 import time
 from LoadTOML import LoadTOML
 from SensorManager import SensorManager
+from SensorTracker import SensorTracker
+from I2CBus import I2CBus
 from pathlib import Path
 
+# Create config dict 
 config_path = Path(__file__).parent.parent / "config.toml"
 config_dict = LoadTOML(config_path)
 config_dict["main_path"] = os.path.dirname(os.path.abspath(__file__))
-i2c_bus = 30
 
+# Create logger 
 new_logger_name = "test_log.txt"
 current_log_handler = logging.basicConfig(filename=new_logger_name,
 	level=logging.DEBUG, 
 	format='%(asctime)s - %(levelname)s - %(message)s')
 
-manager = SensorManager(config_dict, i2c_bus, True)
+# Initialize I2C Bus
+sim_all_sensors = config_dict["sensor_params"]["sim_all"]
+I2C_Handler = I2CBus(sim_all_sensors)
+i2c_bus = I2C_Handler.initialize_i2c_bus()
 
-#print(f"Active sensors: {manager.enabled_sensors}\n")
-manager.initialize_all()
-#print(manager.read("SCD30"))
+# Create sensor manager and sensor tracker and initalize sensors
+sensor_manager = SensorManager(config_dict, i2c_bus, True)
+sensor_manager.initialize_all()
+
+sensor_tracker = SensorTracker(config_dict)
 
 while True:
     print("-"*30 + "Readings" + "-"*30)
-    data = manager.read_all()
+    data = sensor_manager.read_all()
 
     for sensor_id, readings in data.items():
         print(f"[{sensor_id}]")
@@ -33,5 +41,16 @@ while True:
         else: 
             print("NO DATA")
 
+    error_tracking = sensor_tracker.track(data)
+    print(error_tracking)
+
+    if error_tracking["i2c_cycle"]: 
+        I2C_Handler.deinitialize_i2c_bus(i2c_bus)
+        I2C_Handler.initialize_i2c_bus()
+        sensor_manager = SensorManager(config_dict, i2c_bus, True)
+        sensor_manager.initialize_all()
+
+    if error_tracking["power_cycle_ss"]:
+        pass
     print()
     time.sleep(2)

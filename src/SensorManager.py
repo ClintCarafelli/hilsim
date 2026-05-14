@@ -1,6 +1,6 @@
 import logging
 from BaseSensor import Reading, BaseSensor, driver_registry
-from SensorExceptions import SensorInitError, SensorReadError, ConfigError, ConfigErrorHandler
+from SensorExceptions import SensorInitError, SensorReadError, ConfigError
  
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,6 @@ class SensorManager:
         self._sensors: dict[str, BaseSensor] = {}
         self.i2c_bus = i2c_bus
         self._build_sensors(config_dict)
-        self.dead_sensors: bool = dict.fromkeys(self.config_dict["sensor_params"].get("enabled_sensors", []), False)
 
     def initialize_all(self) -> None: 
         failed = []
@@ -30,7 +29,7 @@ class SensorManager:
 
 
     def read_all(self) -> dict[str, list[Reading]]:
-        """Reads all senors that were orginally initailized"""
+        """Reads all sensors that were orginally initailized"""
 
         results: dict[str, list[Reading]] = {}
         for sensor_id, sensor in self._sensors.items():
@@ -107,6 +106,12 @@ class SensorManager:
             driver_class = driver_registry[driver_name]
             self._sensors[sensor_id] = driver_class(sensor_id, sensor_config, self.i2c_bus)
             logger.info("Registered %s → %s", sensor_id, driver_class.__name__)
+
+            
+
+             
+
+
 
             
 

@@ -1,0 +1,9 @@
+[RP_connection]
+sim            = False
+super_sim      = True
+baud_rate      = 115200  # Hz
+device_ID      = ""
+time_out       = 1       # seconds
+read_time      = 0.5.    # seconds
+hb_send_msg    = ping
+hb_recieve_msg = pong

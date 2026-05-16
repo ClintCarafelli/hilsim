@@ -7,7 +7,7 @@ from SensorTracker import SensorTracker
 from I2CBus import I2CBus
 from pathlib import Path
 
-# Create config dict 
+# Create sensor config dict 
 sensor_config_path = Path(__file__).parent.parent / "sensor_config.toml"
 sensor_config = LoadTOML(sensor_config_path)
 sensor_config["main_path"] = os.path.dirname(os.path.abspath(__file__))

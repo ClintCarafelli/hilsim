@@ -3,7 +3,6 @@ from SensorExceptions import SensorInitError, SensorReadError
 from random import random
 # If sim=False, the following will run: DFRobot_Oxygen import DFRobot_Oxygen_IIC
 
-
 class ME2Driver(BaseSensor):
 
     def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any) -> None:
@@ -61,6 +60,9 @@ class FakeME2:
 
 
 
+class teat_ME2Driver():
+    def __init__(self):
+        self.sim = True
 
-            
-
+    def test_initialization():
+        pass

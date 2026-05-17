@@ -4,6 +4,7 @@ super_sim         = "True"
 super_sim_fr      = 1
 baud_rate         = 115200
 device_ID         = ""
+fake_device_ID    = ""
 time_out          = 1       
 read_time         = 0.5    
 hb_send_msg       = "ping"
@@ -11,4 +12,10 @@ hb_receive_msg    = "pong"
 retries           = 3
 connection_cycles = 2
 power_cycles      = 3
+
+
+[CO2]
+channel         = 6
+time            = 50
+
 

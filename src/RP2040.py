@@ -3,10 +3,9 @@ import logging
 import serial
 import time
 from datetime import datetime, timedelta
-from collections.abc import Callable
 from random import random
 from pathlib import Path
-from LoadTOML import LoadTOML
+from src.LoadTOML import LoadTOML
 
 
 logger = logging.getLogger(__name__)
@@ -240,12 +239,13 @@ class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
         return confirmation
 
     
-class  FakeSerial():
+class FakeSerial():
     def __init__(self, config: dict) -> None:
         self.failure_rate   = config["RP_connection"]["super_sim_fr"]
         self.read_time      = config["RP_connection"]["read_time"]
         self.hb_send_msg    = config["RP_connection"]["hb_send_msg"]
         self.hb_receive_msg = config["RP_connection"]["hb_receive_msg"]
+        self.msg            = ""
 
     def write(self, msg: bytes):
         self.msg = msg
@@ -294,7 +294,7 @@ if __name__ == "__main__":
     CDH_controller.GPIO(True, 8, 1, 50)
     CDH_controller.PWM(True, 8, 2300, 1000)
     CDH_controller.Lights(True, 8, 40, 40, 40, 40)
-
         
+
 
 

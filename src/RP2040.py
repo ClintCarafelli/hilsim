@@ -11,19 +11,19 @@ from src.LoadTOML import LoadTOML
 logger = logging.getLogger(__name__)
 
 
-class RP2040Communication():
-    def __init__(self, config_dict: dict, **kwargs) -> None: 
-        super().__init__(config_dict=config_dict, **kwargs) 
+class RP2040Communication:
+    def __init__(self, config_dict: dict, **kwargs) -> None:  
         self.config: dict           = config_dict
         self.sim: bool              = config_dict["RP_connection"]["sim"]
         self.super_sim: bool        = config_dict["RP_connection"]["super_sim"]
         self.baud_rate: int         = int(config_dict["RP_connection"]["baud_rate"])
         self.device_ID: str         = config_dict["RP_connection"]["device_ID"]
-        self.fake_device_ID: str    = config_dict["RP_connection"]["device_ID"]
+        self.fake_device_ID: str    = config_dict["RP_connection"]["fake_device_ID"]
         self.time_out: float        = float(config_dict["RP_connection"]["time_out"])
         self.read_time: float       = float(config_dict["RP_connection"]["read_time"])
         self.hb_send_msg: str       = config_dict["RP_connection"]["hb_send_msg"] 
-        self.hb_recieve_msg: str    = config_dict["RP_connection"]["hb_receive_msg"] 
+        self.hb_receive_msg: str    = config_dict["RP_connection"]["hb_receive_msg"] 
+        super().__init__(config_dict=config_dict, **kwargs)
 
     def _initialize_connection(self) -> None:
         """create the serial connection"""
@@ -38,8 +38,10 @@ class RP2040Communication():
                 self.ser = serial.Serial(device_name, self.baud_rate, self.time_out)
             except Exception as e: 
                 logger.error(f"Error initializing serial connection to RP2040: {e}")
+                self.ser = None
         else:
             self.ser = FakeSerial(self.config)
+
     def _disconnect(self) -> None:
         try:
             logger.info("Closing the serial port to the RP2040")
@@ -48,18 +50,18 @@ class RP2040Communication():
         except Exception as e: 
             logger.error(f"Could not close serial port: {e}")
 
-    def _read_and_write(self, send_msg: str, recieve_msg: str) -> bool:
+    def _read_and_write(self, send_msg: str, receive_msg: str) -> bool:
 
         try: 
             received_data = []
             logger.info(f"sending message '{send_msg}' to RP2040")
             self.ser.write(send_msg.encode())
-            current_time = datetime.now()
+            start_time = datetime.now()
             confirmed = False
-            while datetime.now() - current_time < timedelta(seconds=self.read_time):
+            while datetime.now() - start_time < timedelta(seconds=self.read_time):
                 line = self.ser.readline().decode().strip()
                 received_data.append(line)
-                if recieve_msg in line: 
+                if receive_msg in line: 
                     logger.info(f"received correct confirmation: '{line}'")
                     confirmed = True
                     return True
@@ -78,44 +80,20 @@ class RP2040Communication():
             logger.error(msg)
             return False
 
-class RP2040AdvancedErrorHandling():
-    def __init__(self, config_dict: dict, **kwargs) -> None: 
-        super().__init__(**kwargs) 
+class RP2040AdvancedErrorHandling:
+    def __init__(self, config_dict: dict, **kwargs) -> None:  
         self.config            = config_dict
         self.retries           = int(config_dict["RP_connection"]["retries"])
         self.connection_cycles = int(config_dict["RP_connection"]["connection_cycles"])
         self.power_cycles      = int(config_dict["RP_connection"]["power_cycles"])
+        super().__init__(**kwargs)
 
-    def advanced_connection(self, send_msg: str,receive_msg: str, pca: bool) -> dict:
-        
-        recovery_location = {"retries": False, 
-                             "software_cycle": False,
-                             "power_cycle": False}
-        confirmed = self._retries(send_msg, receive_msg)
-        if confirmed:
-            recovery_location["retries"] = True
-            return recovery_location
-        else:
-            confirmed = self._reconnect()
-
-        if confirmed:
-            recovery_location["software_cycle"] = True
-            return recovery_location
-        else: 
-            confirmed = self._power_cycle(pca)
-
-        if confirmed:
-            recovery_location["power_cycle"] = True
-            return recovery_location
-        else: 
-            return recovery_location
-
-    def _retries(self, send_msg: str, recieve_msg: str) -> bool:
+    def _retries(self, send_msg: str, receive_msg: str) -> bool:
         """ retry sending the message to determine if """
 
         for i in range(self.retries):
             logger.info(f"attempting retry {str(i+1)}")
-            confirmed = self._read_and_write(send_msg, recieve_msg)
+            confirmed = self._read_and_write(send_msg, receive_msg)
             if confirmed:
                 logger.info(f"Received response on retry {str(i+1)}," \
                              "RP2040 connection re-established.")
@@ -128,6 +106,7 @@ class RP2040AdvancedErrorHandling():
         for i in range(self.connection_cycles):
             logger.info(f"attempting software reconnection, attempt {str(i+1)}")
             self._disconnect()
+            # add bash script here
             self._initialize_connection()
             confirmed = self._read_and_write("ping", "pong")
             if confirmed:
@@ -158,6 +137,30 @@ class RP2040AdvancedErrorHandling():
             logger.info("power cycling unavailable.")
             return False
         
+    def advanced_connection(self, send_msg: str,receive_msg: str, pca: bool) -> dict:
+        
+        recovery_location = {"retries": False, 
+                             "software_cycle": False,
+                             "power_cycle": False}
+        confirmed = self._retries(send_msg, receive_msg)
+        if confirmed:
+            recovery_location["retries"] = True
+            return recovery_location
+        else:
+            confirmed = self._reconnect()
+
+        if confirmed:
+            recovery_location["software_cycle"] = True
+            return recovery_location
+        else: 
+            confirmed = self._power_cycle(pca)
+
+        if confirmed:
+            recovery_location["power_cycle"] = True
+            return recovery_location
+        else: 
+            return recovery_location
+        
 
 class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
     def __init__(self, config_dict: dict, **kwargs) -> None:
@@ -167,9 +170,9 @@ class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
     def connect(self):
         self._initialize_connection()
 
-    def full_communcation_handling(self, pca, 
+    def full_communication_handling(self, pca: bool, 
                                    send_msg:str|None=None, 
-                                   receive_msg:str|None=None) -> bool | str:
+                                   receive_msg:str|None=None) -> bool:
         """Apply full communication protocol to RP2040 using basic read/writes and
           advanced error handling techniques"""
         logger.info("Sending heartbeat to RP2040")
@@ -178,17 +181,17 @@ class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
             send_msg = self.hb_send_msg
 
         if receive_msg == None: 
-            receive_msg = self.hb_recieve_msg
+            receive_msg = self.hb_receive_msg
 
 
         confirmed = self._read_and_write(send_msg, receive_msg)
-
-        if not confirmed: 
+        if not confirmed:
             logger.info("Moving to advanced error handling on RP2040-host communication")
             recovery_location = self.advanced_connection(send_msg, receive_msg, pca)
 
             if recovery_location["retries"]: 
                 logger.info("Message successfully sent and confirmed on retries")
+                new_confirmed = True
             elif recovery_location["software_cycle"]:
                 logger.info("RP2040 connection recovered with software cycle, resending message:")
                 new_confirmed = self._read_and_write(send_msg, receive_msg)
@@ -214,28 +217,28 @@ class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
             send_msg = self.hb_send_msg
 
         if receive_msg is None: 
-            receive_msg = self.hb_recieve_msg
+            receive_msg = self.hb_receive_msg
 
-        confirmation: bool = self.full_communcation_handling(send_msg, receive_msg)
+        confirmation = self.full_communication_handling(send_msg, receive_msg)
 
         return confirmation
     
     def GPIO(self, pca: bool, channel: int, side: int, time: int) -> bool:
         """ Send CO2 injection message"""
         msg = "GPIO, " + str(channel) + ", " + str(side) + ", " + str(time)
-        confirmation = self.full_communcation_handling(msg, msg)
+        confirmation = self.full_communication_handling(msg, msg)
         return confirmation
 
     def PWM(self, pca: bool, channel: int, clicks: int, time: int) -> bool:
         """ Send CO2 injection message"""
         msg = "PWM, " + str(channel) + ", " + str(clicks) + ", "  + str(time)
-        confirmation = self.full_communcation_handling(msg, msg)
+        confirmation = self.full_communication_handling(msg, msg)
         return confirmation
     
     def Lights(self, pca: bool, channel: int, g: int, r: int, b: int, w) -> bool:
         """ Send CO2 injection message"""
-        msg = "Lights, " + str(g) + ", " + str(r) + ", "  + str(b) + ", " + str(w)
-        confirmation = self.full_communcation_handling(msg, msg)
+        msg = "Lights, " + str(channel) + ", " + str(g) + ", " + str(r) + ", "  + str(b) + ", " + str(w)
+        confirmation = self.full_communication_handling(msg, msg)
         return confirmation
 
     

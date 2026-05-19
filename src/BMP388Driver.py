@@ -1,5 +1,5 @@
-from BaseSensor import Reading, BaseSensor
-from SensorExceptions import SensorInitError, SensorReadError
+from src.BaseSensor import Reading, BaseSensor
+from src.SensorExceptions import SensorInitError, SensorReadError
 from  random import random
 # If sim=False: will import adafruit_bmp3xx
 

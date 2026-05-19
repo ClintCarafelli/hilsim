@@ -1,5 +1,5 @@
-from BaseSensor import BaseSensor, Reading
-from SensorExceptions import SensorInitError, SensorReadError
+from src.BaseSensor import BaseSensor, Reading
+from src.SensorExceptions import SensorInitError, SensorReadError
 from random import random
 
 class INA260Driver(BaseSensor): 

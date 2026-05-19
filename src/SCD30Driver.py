@@ -1,5 +1,5 @@
-from BaseSensor import Reading, BaseSensor
-from SensorExceptions import SensorInitError, SensorReadError
+from src.BaseSensor import Reading, BaseSensor
+from src.SensorExceptions import SensorInitError, SensorReadError
 from datetime import datetime, timedelta
 from  random import random
 

@@ -31,12 +31,12 @@ class BaseSensor(ABC):
     def read(self) -> list[Reading]:
         """ Use this base method to initialize sensors"""
 
-
-from SCD30Driver import SCD30Driver
-from BMP388Driver import BMP388Driver
-from STEMMADriver import STEMMADriver
-from ME2Driver import ME2Driver
-from INA260Driver import INA260Driver
+"""
+from src.SCD30Driver import SCD30Driver
+from src.BMP388Driver import BMP388Driver
+from src.STEMMADriver import STEMMADriver
+from src.ME2Driver import ME2Driver
+from src.INA260Driver import INA260Driver
 
 # Map the class that drives the sensor to the driver field in the config.toml file
 driver_registry: dict = {
@@ -48,4 +48,4 @@ driver_registry: dict = {
     "ME2_driver":     ME2Driver,
     "INA260_driver":  INA260Driver,
 }
-
+"""

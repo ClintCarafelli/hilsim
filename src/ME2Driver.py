@@ -1,5 +1,5 @@
-from BaseSensor import Reading, BaseSensor
-from SensorExceptions import SensorInitError, SensorReadError
+from src.BaseSensor import Reading, BaseSensor
+from src.SensorExceptions import SensorInitError, SensorReadError
 from random import random
 # If sim=False, the following will run: DFRobot_Oxygen import DFRobot_Oxygen_IIC
 
@@ -57,12 +57,3 @@ class FakeME2:
             return None
         else: 
             return self.readings_meta_data[0]["min"] + random() * self.readings_meta_data[0]["max"] - self.readings_meta_data[0]["min"]
-
-
-
-class teat_ME2Driver():
-    def __init__(self):
-        self.sim = True
-
-    def test_initialization():
-        pass

@@ -1,9 +1,7 @@
 import pytest
-from unittest.mock import patch, MagicMock, call
+from unittest.mock import patch, MagicMock
 from src.ME2Driver import ME2Driver, FakeME2
 from src.SensorExceptions import SensorInitError, SensorReadError
-
-
 
 sensor_id = "ME2"
 i2c_bus = None
@@ -15,7 +13,7 @@ readings_list = [{"name": "oxygen",
 @pytest.fixture
 def base_config():
     return {"sim": False, 
-            "failure_rate": 0, 
+            "failure_rate": 0,
             "IIC_mode": 0x01,
             "i2c_address": 0x73,
             "collection_number": 10,
@@ -85,15 +83,22 @@ def test_read_failure(sim_success_ME2Driver):
     sim_success_ME2Driver.device.get_oxygen_data.side_effect = Exception("fail")
     with pytest.raises(SensorReadError):
         sim_success_ME2Driver.read()
-     
-@patch("src.ME2Driver.random")
-def test_get_oxygen_data(mock_random):
-    FakeME2_instance = FakeME2(0,readings_list)
-    mock_random.side_effect = [0.5, 0.5]
-    result = FakeME2_instance.get_oxygen_data(10)
-    assert result == 12.5
 
+@pytest.mark.parametrize(
+        "failure_rate",
+        [
+            (0),
+            (1)
+        ]
+)
 
-
-
-
+def test_get_oxygen_data_success(failure_rate):
+    ME2 = FakeME2(failure_rate, readings_list)
+    with patch("src.ME2Driver.random", side_effect=[0.5, 0.5]) as mock_random: 
+        result = ME2.get_oxygen_data(10)
+        if failure_rate == 1: 
+            assert result is None
+            assert mock_random.call_count == 1
+        if failure_rate == 0: 
+            assert result == 12.5
+            assert mock_random.call_count == 2

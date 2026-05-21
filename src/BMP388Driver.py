@@ -47,11 +47,13 @@ class FakeBMP388:
 
     @property
     def pressure(self) -> float | None:
+        # query index for correct bounds for reading
         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == "pressure")
         if self.rand_num < self.failure_rate:
-            return None 
+            val = None 
         else:
-            return self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
+            val = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
+        return val
 
     # reset self.rand_num in temp setting to actually get the random number to change. Done by convetion in temp
     # because it is called second in the read function, keeping with the idea that both pressure and 
@@ -59,11 +61,12 @@ class FakeBMP388:
     # together
     @property
     def temperature(self)-> float | None:
+        # query index for correct bounds for reading
         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == "air_temp")
         if self.rand_num < self.failure_rate:
-            self.rand_num= random()
-            return None 
+            val =  None 
         else:
-             self.rand_num= random()
-             return self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
+            val = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
+        self.rand_num = random()
+        return val 
 

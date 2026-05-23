@@ -167,6 +167,8 @@ def test_in_range(SCD30):
         result = SCD30._in_range("CO2")
         assert result == 40000.0
 
+    
+
 
 
 

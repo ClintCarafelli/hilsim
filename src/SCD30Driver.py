@@ -63,7 +63,7 @@ class FakeSCD30:
         else:
             return False
 
-    def read_measurement(self):
+    def read_measurement(self) -> list[float]:
         # Bounds are hardcoded since they do not change. Hardware contraint. 
         # Note that if the sensor fails, all three readings fail. 
         if random() < self.failure_rate: 
@@ -74,7 +74,7 @@ class FakeSCD30:
             temp      = self._in_range("temp")
             return [CO2_val, rel_humid, temp]
         
-    def _in_range(self, name):
+    def _in_range(self, name: str) -> float:
          """find random value between min and max of the result"""
          i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == name)
          val: float = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] -

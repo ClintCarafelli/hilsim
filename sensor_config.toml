@@ -54,8 +54,8 @@ accuracy = "None"
 [[sensors.STEMMA1.readings]]
 name     = "temp"
 units    = "C"
-max      = -40
-min      = 85
+max      = 85
+min      = -40
 accuracy = 2
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

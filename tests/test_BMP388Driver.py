@@ -99,10 +99,10 @@ def fail_fake_driver():
 
 def test_get_same_random(success_fake_driver): 
     with patch("src.BMP388Driver.random", return_value=0.1):
-        success_fake_driver.get_same_random()
+        success_fake_driver._get_same_random()
         assert success_fake_driver.rand_num == 0.5
         assert success_fake_driver.counter == 1
-        success_fake_driver.get_same_random()
+        success_fake_driver._get_same_random()
         assert success_fake_driver.rand_num == 0.1
         assert success_fake_driver.counter == 2
 

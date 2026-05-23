@@ -54,4 +54,3 @@ def test_BaseSensor_no_description_or_readings_init():
 def test_BaseSensor_is_abstract():
     with pytest.raises(TypeError):
         BaseSensor(sensor_id, readings_list, i2c_bus)
-

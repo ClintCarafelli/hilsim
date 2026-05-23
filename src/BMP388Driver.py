@@ -11,17 +11,16 @@ class BMP388Driver(BaseSensor):
         self.failure_rate = config_dict["failure_rate"]
 
     def initialize(self) -> None:
-        if self.sim:
-            self.device = FakeBMP388(self.failure_rate, self.readings_meta_data)
-            self.initialized = True
-        else: 
-            try: 
+        try: 
+            if self.sim:
+                self.device = FakeBMP388(self.failure_rate, self.readings_meta_data)
+                self.initialized = True
+            else:  
                 import adafruit_bmp3xx
                 self.device = adafruit_bmp3xx.BMP3XX_I2C(self.i2c_bus)
                 self.initialized = True
-
-            except Exception as e: 
-                raise  SensorInitError(self.sensor_id, str(e)) from e
+        except Exception as e: 
+            raise  SensorInitError(self.sensor_id, str(e)) from e
             
 
     def read(self) -> list[Reading]:
@@ -33,40 +32,49 @@ class BMP388Driver(BaseSensor):
             vals = [pressure, temp]
 
         except Exception as e: 
-            vals = [None, None]
             raise SensorReadError(self.sensor_id, str(e)) from e
         
         return [Reading(m["name"], val, m["units"]) for val, m in zip(vals, self.readings_meta_data)]
 
             
 class FakeBMP388: 
-    def __init__(self, failure_rate, readings_meta_data) -> None:
+    def __init__(self, failure_rate, readings_meta_data,) -> None:
         self.failure_rate = failure_rate
-        self.rand_num = random()
         self.readings_meta_data = readings_meta_data
+        self.counter = 0
+        self.rand_num = 0.5
+
+    # When these sensors are actually implimented, they never fail on a single parameter read, 
+    # rather they all fail together (likey due to impedance / emi on the data lines leading to an 
+    # unrecognizable i2c address and therefore a failed reading for all parameters. Hence I
+    # have tied the failure of indivdual parameters together by making the random number that
+    # dictates failure only reset after both functions are called (they are never called in isolation))
+    def get_same_random(self):
+        # reset random number every2 counts since this function gets called twice for a full sensor read
+        self.counter += 1
+        if self.counter % 2 == 0:
+            self.rand_num = random()
+            return self.rand_num
+        else: 
+            return self.rand_num
 
     @property
     def pressure(self) -> float | None:
-        # query index for correct bounds for reading
+        # query index for correct bounds for reading 
         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == "pressure")
-        if self.rand_num < self.failure_rate:
-            val = None 
+        if self.get_same_random() < self.failure_rate:
+            raise Exception("simulated failed reading")
         else:
             val = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
         return val
-
-    # reset self.rand_num in temp setting to actually get the random number to change. Done by convetion in temp
-    # because it is called second in the read function, keeping with the idea that both pressure and 
-    # temperature failure should be set by the same random number generator because they always fail 
-    # together
+    
     @property
     def temperature(self)-> float | None:
         # query index for correct bounds for reading
         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == "air_temp")
-        if self.rand_num < self.failure_rate:
-            val =  None 
+        if self.get_same_random() < self.failure_rate:
+            raise Exception("simulated failed reading")
         else:
             val = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"])
-        self.rand_num = random()
         return val 
 

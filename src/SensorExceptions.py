@@ -12,11 +12,3 @@ class SensorReadError(SensorError):
 
 class ConfigError(SensorError):
     """Raised when the config file is missing, malformed, or incomplete."""
-
-class SensorErrorHandler(Exception):
-    def __init__(self, error_strat: str, message: str) -> None:
-        self.error_strat = error_strat
-        super().__init__(f"error strategy issue: [{error_strat}] {message}")
-
-class ConfigErrorHandler(SensorErrorHandler):
-    """Raised when the error_stat does not have its own config block"""

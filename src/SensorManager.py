@@ -42,6 +42,7 @@ class SensorManager:
                 results[sensor_id] = sensor.read()
             except SensorReadError as e: 
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
+                ## FILL IN NONE VALUES
                 results[sensor_id] = []
         return results
     
@@ -58,6 +59,7 @@ class SensorManager:
                 results[sensor_id] = self._sensors[sensor_id].read()
             except SensorReadError as e: 
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
+                ## FILL IN NONE VALUES
                 results[sensor_id] = []
         return results
     

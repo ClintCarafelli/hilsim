@@ -28,77 +28,69 @@ def sim_success_config(base_config):
      return {**base_config, "sim": True, "failure_rate": 0}
 
 @pytest.fixture
-def real_ME2Driver(base_config):
+def real_driver(base_config):
     return ME2Driver(sensor_id, base_config, i2c_bus)
 
 @pytest.fixture
-def sim_failure_ME2Driver(sim_failure_config):
-    return ME2Driver(sensor_id, sim_failure_config, i2c_bus)
-
-@pytest.fixture
-def sim_success_ME2Driver(sim_success_config):
+def sim_driver(sim_success_config):
     return ME2Driver(sensor_id, sim_success_config, i2c_bus)
 
-def test_sim_initialize(sim_success_ME2Driver):
+def test_sim_initialize_success(sim_driver):
     fake_device = MagicMock()
-    with patch("src.ME2Driver.FakeME2", return_value=fake_device) as mock_FakeME2:
-        sim_success_ME2Driver.initialize()
-        assert sim_success_ME2Driver.initialized is True
-        mock_FakeME2.assert_called_once_with(sim_success_ME2Driver.failure_rate,
-                                              sim_success_ME2Driver.readings_meta_data)
+    with patch("src.ME2Driver.FakeME2") as mock_FakeME2:
+        sim_driver.initialize()
+        assert sim_driver.initialized is True
+        mock_FakeME2.assert_called_once_with(sim_driver.failure_rate,
+                                              sim_driver.readings_meta_data)
         
-
-def test_initialize_success(real_ME2Driver):
+def test_sim_initialize_fail(sim_driver):
+    with patch("src.ME2Driver.FakeME2", side_effect=Exception("fail")):
+        with pytest.raises(SensorInitError):
+            sim_driver.initialize()
+    
+def test_initialize_success(real_driver):
     mock_device = MagicMock()
     mock_IIC_class = MagicMock(return_value=mock_device)
     with patch.dict("sys.modules", {"DFRobot_Oxygen": MagicMock(DFRobot_Oxygen_IIC=mock_IIC_class)}):
-        real_ME2Driver.initialize()
+        real_driver.initialize()
 
-        mock_IIC_class.assert_called_once_with(real_ME2Driver.IIC_mode, real_ME2Driver.i2c_address)
+        mock_IIC_class.assert_called_once_with(real_driver.IIC_mode, real_driver.i2c_address)
 
-        assert real_ME2Driver.initialized is True
-        assert real_ME2Driver.device is mock_device
+        assert real_driver.initialized is True
+        assert real_driver.device is mock_device
      
-def test_initialize_failure(real_ME2Driver):
+def test_initialize_failure(real_driver):
     mock_IIC_class = MagicMock(side_effect=Exception("fail"))
     with patch.dict("sys.modules", {"DFRobot_Oxygen": MagicMock(DFRobot_Oxygen_IIC=mock_IIC_class)}):
         with pytest.raises(SensorInitError):
-            real_ME2Driver.initialize()
-            mock_IIC_class.assert_called_once_with(real_ME2Driver.IIC_mode, real_ME2Driver.i2c_address)
-            assert real_ME2Driver.initialized is True
+            real_driver.initialize()
+        assert real_driver.initialized is False
 
-def test_read_success(sim_success_ME2Driver):
-    sim_success_ME2Driver.initialized = True
-    sim_success_ME2Driver.device = MagicMock()
-    sim_success_ME2Driver.device.get_oxygen_data.return_value = 20
+def test_read_success(sim_driver):
+    sim_driver.initialized = True
+    sim_driver.device = MagicMock()
+    sim_driver.device.get_oxygen_data.return_value = 20
 
-    result = sim_success_ME2Driver.read()
+    result = sim_driver.read()
     assert result[0].value == 20
-    sim_success_ME2Driver.device.get_oxygen_data.assert_called_once_with(
-        sim_success_ME2Driver.collection_number)
+    sim_driver.device.get_oxygen_data.assert_called_once_with(
+        sim_driver.collection_number)
     
-def test_read_failure(sim_success_ME2Driver):
-    sim_success_ME2Driver.initialized = True
-    sim_success_ME2Driver.device = MagicMock()
-    sim_success_ME2Driver.device.get_oxygen_data.side_effect = Exception("fail")
+def test_read_failure(sim_driver):
+    sim_driver.initialized = True
+    sim_driver.device = MagicMock()
+    sim_driver.device.get_oxygen_data.side_effect = Exception("fail")
     with pytest.raises(SensorReadError):
-        sim_success_ME2Driver.read()
+        sim_driver.read()
 
-@pytest.mark.parametrize(
-        "failure_rate",
-        [
-            (0),
-            (1)
-        ]
-)
+def test_simulated_reading_failure():
+    ME2 = FakeME2(1, readings_list)
+    with pytest.raises(Exception):
+        ME2.get_oxygen_data(10)
 
-def test_get_oxygen_data_success(failure_rate):
-    ME2 = FakeME2(failure_rate, readings_list)
+def test_get_oxygen_data_success():
+    ME2 = FakeME2(0, readings_list)
     with patch("src.ME2Driver.random", side_effect=[0.5, 0.5]) as mock_random: 
-        result = ME2.get_oxygen_data(10)
-        if failure_rate == 1: 
-            assert result is None
-            assert mock_random.call_count == 1
-        if failure_rate == 0: 
-            assert result == 12.5
-            assert mock_random.call_count == 2
+        result = ME2.get_oxygen_data(10) 
+        assert result == 12.5
+        assert mock_random.call_count == 2

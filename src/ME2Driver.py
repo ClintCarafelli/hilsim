@@ -16,18 +16,17 @@ class ME2Driver(BaseSensor):
 
     def initialize(self):
         """Initialize the ME2 (DFRobot) oxygen sensor"""
-        if self.sim:
-            self.device = FakeME2(self.failure_rate, self.readings_meta_data)
-            self.initialized = True
+        try:
+            if self.sim:
+                self.device = FakeME2(self.failure_rate, self.readings_meta_data)
+                self.initialized = True
 
-        else: 
-            try: 
+            else: 
                 from DFRobot_Oxygen import DFRobot_Oxygen_IIC
                 self.device = DFRobot_Oxygen_IIC(self.IIC_mode, self.i2c_address)
                 self.initialized = True
-
-            except Exception as e: 
-                raise SensorInitError(self.sensor_id, str(e)) from e
+        except Exception as e: 
+            raise SensorInitError(self.sensor_id, str(e)) from e
             
     def read(self):
 
@@ -37,7 +36,6 @@ class ME2Driver(BaseSensor):
             vals = self.device.get_oxygen_data(self.collection_number)
 
         except Exception as e: 
-            vals = None
             raise SensorReadError(self.sensor_id, str(e)) from e
         
         return [Reading(self.readings_meta_data[0]["name"], vals, self.readings_meta_data[0]["units"])]
@@ -54,6 +52,6 @@ class FakeME2:
     # method defined in DFRobot_Oxygen_IIC
     def get_oxygen_data(self, collection_number: int) -> float | None:
         if random() < self.failure_rate:
-            return None
+            raise Exception("simulated failed reading")
         else: 
             return self.readings_meta_data[0]["min"] + random() * self.readings_meta_data[0]["max"] - self.readings_meta_data[0]["min"]

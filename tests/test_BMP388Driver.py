@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import patch, MagicMock, PropertyMock
 from src.BMP388Driver import BMP388Driver, FakeBMP388
 from src.SensorExceptions import SensorInitError, SensorReadError
+from random import random
 
 sensor_id = "BMP388"
 i2c_bus = None
@@ -22,107 +23,104 @@ def base_config():
             "readings": readings_list}
 
 @pytest.fixture
-def sim_success_config(base_config):
+def sim_config(base_config):
     return {**base_config, "sim": True}
 
 @pytest.fixture
-def sim_failure_config(base_config):
-    return {**base_config, "sim": True, "failure_rate": 1}
-
-@pytest.fixture
-def real_BMP388Driver(base_config):
+def real_driver(base_config):
     return BMP388Driver(sensor_id, base_config, i2c_bus)
 
 @pytest.fixture
-def sim_success_BMP388Driver(sim_success_config):
-    return BMP388Driver(sensor_id, sim_success_config, i2c_bus)
+def sim_driver(sim_config):
+    return BMP388Driver(sensor_id, sim_config, i2c_bus)
 
-@pytest.fixture
-def sim_success_BMP388Driver(sim_failure_config):
-    return BMP388Driver(sensor_id, sim_failure_config, i2c_bus)
-
-def test_sim_initialize(sim_success_BMP388Driver):
+def test_sim_initialize_success(sim_driver):
     fake_driver = MagicMock()
     with patch("src.BMP388Driver.FakeBMP388",return_value=fake_driver) as mock_FakeBMP388: 
-        sim_success_BMP388Driver.initialize()
-        assert sim_success_BMP388Driver.device is fake_driver
-        assert sim_success_BMP388Driver.initialized is True
+        sim_driver.initialize()
+        assert sim_driver.device is fake_driver
+        assert sim_driver.initialized is True
         mock_FakeBMP388.assert_called_once_with(
-            sim_success_BMP388Driver.failure_rate, 
-            sim_success_BMP388Driver.readings_meta_data)
-
-def test_initialize_success(real_BMP388Driver):
+            sim_driver.failure_rate, 
+            sim_driver.readings_meta_data)
+        
+def test_sim_initialize_failure(sim_driver):
+    with patch("src.BMP388Driver.FakeBMP388", side_effect=Exception("fail")):
+        with pytest.raises(SensorInitError):
+            sim_driver.initialize()
+        assert sim_driver.initialized is False
+    
+def test_initialize_success(real_driver):
     mock_device = MagicMock()
     mock_BMP3XX_I2C_class = MagicMock(return_value=mock_device)
     with patch.dict("sys.modules", {"adafruit_bmp3xx": MagicMock(BMP3XX_I2C=mock_BMP3XX_I2C_class)}):
-        real_BMP388Driver.initialize()
-        assert real_BMP388Driver.initialized is True
-        assert real_BMP388Driver.device is mock_device
+        real_driver.initialize()
+        assert real_driver.initialized is True
+        assert real_driver.device is mock_device
         mock_BMP3XX_I2C_class.assert_called_once_with(
-            real_BMP388Driver.i2c_bus)
+            real_driver.i2c_bus)
 
-def test_initialize_failure(real_BMP388Driver):
-    mock_device = MagicMock()
+def test_initialize_failure(real_driver):
     mock_BMP3XX_I2C_class = MagicMock(side_effect=Exception("fail"))
-    with patch.dict("sys.modules", {"adafruite_bmp3xx": MagicMock(BM3XX_I2C=mock_BMP3XX_I2C_class)}):
+    with patch.dict("sys.modules", {"adafruit_bmp3xx": MagicMock(BMP3XX_I2C=mock_BMP3XX_I2C_class)}):
         with pytest.raises(SensorInitError):
-            real_BMP388Driver.initialize()
-            assert real_BMP388Driver.device is mock_device
-            mock_BMP3XX_I2C_class.assert_called_once_with(
-                real_BMP388Driver.i2c_bus)
-            assert real_BMP388Driver.initialized is False
+            real_driver.initialize()
+        assert real_driver.initialized is False
         
-def test_read_not_initialized(real_BMP388Driver):
+def test_read_not_initialized(real_driver):
     with pytest.raises(SensorReadError):
-        real_BMP388Driver.read()
+        real_driver.read()
 
+def test_read_success(real_driver):
+    real_driver.initialized        = True
+    real_driver.device             = MagicMock()
+    real_driver.device.pressure    = 1
+    real_driver.device.temperature = 2
 
-def test_read_success(real_BMP388Driver):
-    real_BMP388Driver.initialized        = True
-    real_BMP388Driver.device             = MagicMock()
-    real_BMP388Driver.device.pressure    = 1
-    real_BMP388Driver.device.temperature = 2
-
-    result = real_BMP388Driver.read()
-    print(result)
+    result = real_driver.read()
     assert result[0].value == 1
     assert result[1].value == 2
 
-def test_read_failure(real_BMP388Driver):
-    real_BMP388Driver.initialized = True
-    real_BMP388Driver.device = MagicMock()
-    type(real_BMP388Driver.device).pressure = PropertyMock(side_effect=Exception("fail"))
+def test_read_failure(real_driver):
+    real_driver.initialized = True
+    real_driver.device = MagicMock()
+    type(real_driver.device).pressure = PropertyMock(side_effect=Exception("fail"))
     with pytest.raises(SensorReadError):
-        result = real_BMP388Driver.read() 
-        assert result[0].value is None
-        assert result[1].value is None
+        result = real_driver.read()
 
 @pytest.fixture
-def success_FAKEBMP388():
-    with patch("src.BMP388Driver.random", return_value=0.5):
-        val_creator =  FakeBMP388(0, readings_list)
-        assert val_creator.rand_num == 0.5
-        return val_creator 
+def success_fake_driver():
+    return  FakeBMP388(0, readings_list)
 
 @pytest.fixture
-def fail_FAKEBMP388():
-     with patch("src.BMP388Driver.random", return_value=0.5):
-        val_creator =  FakeBMP388(1, readings_list)
-        assert val_creator.rand_num == 0.5
-        return val_creator 
+def fail_fake_driver():
+    # self.get_same_random is a surrogate for random() which is always less than 1, which gurantees failure
+    return  FakeBMP388(1, readings_list)
 
-def test_success_FAKEBMP388(success_FAKEBMP388):
+def test_get_same_random(success_fake_driver): 
+    with patch("src.BMP388Driver.random", return_value=0.1):
+        success_fake_driver.get_same_random()
+        assert success_fake_driver.rand_num == 0.5
+        assert success_fake_driver.counter == 1
+        success_fake_driver.get_same_random()
+        assert success_fake_driver.rand_num == 0.1
+        assert success_fake_driver.counter == 2
+
+def test_pressure_success(success_fake_driver): 
     with patch("src.BMP388Driver.random", return_value=0.5):
-        assert success_FAKEBMP388.pressure == 775
-        assert success_FAKEBMP388.temperature == 32.5
+        assert success_fake_driver.pressure == 775
 
-def test_success_FAKEBMP388(fail_FAKEBMP388):
+def test_pressure_fail(fail_fake_driver): 
+    with pytest.raises(Exception):
+        fail_fake_driver.pressure
+
+def test_temperature_success(success_fake_driver): 
     with patch("src.BMP388Driver.random", return_value=0.5):
-        assert fail_FAKEBMP388.pressure is None
-        assert fail_FAKEBMP388.temperature is None
+        assert success_fake_driver.temperature == 32.5
 
-
-
+def test_temperature_fail(fail_fake_driver): 
+    with pytest.raises(Exception):
+        fail_fake_driver.temperature
 
 
 

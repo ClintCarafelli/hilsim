@@ -9,45 +9,46 @@ class SCD30Driver(BaseSensor):
         super().__init__(sensor_id, config_dict, i2c_bus)
         self.sim = config_dict["sim"]
         self.failure_rate = config_dict["failure_rate"]
+        self.device = None
 
     def initialize(self) -> None:
         """ Initialize the SCD30 sensor"""
-        if self.sim: 
-            # set_measurement_interval is hard coded because that is the absolute maximum rate the sensor can 
-            # read. Slower reading rates are controlled in the main.py /config.txt file
-            self.device = FakeSCD30(self.failure_rate)
-            self.device.set_measurement_interval(2) 
-            self.device.start_periodic_measurement()
-            self.initialized = True
-        else: 
-            try: 
+        try: 
+            if self.sim:
+                # set_measurement_interval is hard coded because that is the absolute maximum rate the sensor can 
+                # read. Slower reading rates are controlled in the main.py /config.txt file
+                self.device = FakeSCD30(self.failure_rate, self.readings_meta_data)
+                self.device.set_measurement_interval(2) 
+                self.device.start_periodic_measurement()
+                self.initialized = True
+            else: 
                 from scd30_i2c import SCD30
                 self.device = SCD30()
                 self.device.set_measurement_interval(2) 
                 self.device.start_periodic_measurement()
                 self.initialized = True
-            except Exception as e: 
-                raise SensorInitError(self.sensor_id, str(e)) from e
+        except Exception as e: 
+            raise SensorInitError(self.sensor_id, str(e)) from e
+
 
     def read(self) -> list[Reading]:
         """ Read the SCD30 sensor """
         if not self.initialized:
             raise SensorReadError(self.sensor_id, "Sensor not initialized.")
         try: 
-            vals = self.device.read_measurment()
-
+            # these vals MUST be in the exact order as readings_meta_data which is a list of dictonaries
+            vals = self.device.read_measurement()
         except Exception as e:
-            vals = [None, None, None]
             raise SensorReadError(self.sensor_id, str(e)) from e
 
         return [Reading(m["name"], val, m["units"]) for val, m in zip(vals, self.readings_meta_data)]
         
-
         
 class FakeSCD30:
     """ This is a class that has fake methods and produces fake data for the SCD30 sensor"""
-    def __init__(self, failure_rate):
+    def __init__(self, failure_rate, readings_meta_data):
         self.failure_rate = failure_rate
+        self.readings_meta_data = readings_meta_data
 
     def set_measurement_interval(self, a: float) -> None: 
         self.measurement_interval = a
@@ -57,22 +58,28 @@ class FakeSCD30:
         self.last_reading_time = datetime.now()
 
     def get_data_ready(self) -> bool:
-        if datetime.now() - self.last_reading_time > timedelta(seconds=self.measurement_interva):
+        if datetime.now() - self.last_reading_time > timedelta(seconds=self.measurement_interval):
             return True
         else:
             return False
 
-    def read_measurment(self):
+    def read_measurement(self):
         # Bounds are hardcoded since they do not change. Hardware contraint. 
         # Note that if the sensor fails, all three readings fail. 
         if random() < self.failure_rate: 
-            return [None, None, None]
-
+            raise Exception("simulated failed reading")
         else: 
-            CO2 = random() * 40000
-            rel_humid = random() * 95
-            temp  = random() * 50
-            return [CO2, rel_humid, temp]
+            CO2_val   = self._in_range("CO2")
+            rel_humid = self._in_range("relative_humidity")
+            temp      = self._in_range("temp")
+            return [CO2_val, rel_humid, temp]
+        
+    def _in_range(self, name):
+         """find random value between min and max of the result"""
+         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == name)
+         val: float = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] -
+                                                                self.readings_meta_data[i]["min"])
+         return val
 
 
         

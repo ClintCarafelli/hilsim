@@ -50,6 +50,15 @@ def test_sim_initialize_fail(sim_driver):
           with pytest.raises(SensorInitError):
               sim_driver.initialize()
 
+
+def test_real_initialize(real_driver):
+    mock_seesaw = MagicMock()
+    with patch.dict("sys.modules", { "adafruit_seesaw": MagicMock(),
+        "adafruit_seesaw.seesaw": MagicMock(Seesaw=mock_seesaw)
+    }):
+        real_driver.initialize()
+        assert real_driver.initialized is True
+
 def test_read_not_init_failure(real_driver):
     with pytest.raises(SensorReadError):
         real_driver.read()

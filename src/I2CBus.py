@@ -8,7 +8,6 @@ class I2CBus:
         self.sim_all = sim_all
         self.initialized = False
 
-
     def initialize_i2c_bus(self) -> any:
         if self.sim_all: 
             logger.info("Initalizing I2C Bus")

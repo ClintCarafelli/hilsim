@@ -1,7 +1,8 @@
 import logging
-from BaseSensor import Reading, BaseSensor, driver_registry
-from SensorExceptions import SensorInitError, SensorReadError, ConfigError
- 
+from src.BaseSensor import Reading, BaseSensor
+from src.SensorExceptions import SensorInitError, SensorReadError, ConfigError
+from  src.DriverRegistry import driver_registry
+
 logger = logging.getLogger(__name__)
 
 class SensorManager:

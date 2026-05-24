@@ -9,7 +9,7 @@ class SensorTracker():
 
         self.dead_sensors: dict[str, bool]     = dict.fromkeys(enabled_sensors, False)
         self.sensor_errors: dict[str, bool]    = dict.fromkeys(enabled_sensors, 0)
-        self.sensor_error_sol: dict[str, bool] = {"i2c_cycle": False, "power_cycle_ss": False}
+        self.sensor_error_sol: dict[str, bool] = {"i2c_cycle": False, "power_cycle": False}
 
         self.first_i2c_cycle_trig    = config_dict["sensor_error_program"]["first_i2c_cycle"]
         self.second_i2c_cycle_trig   = config_dict["sensor_error_program"]["second_i2c_cycle"]
@@ -20,6 +20,7 @@ class SensorTracker():
     def track(self, results: dict) -> dict:
         """ Determine how many subsequent errors occur on each sensor"""
         for sensor, readings in results.items():
+            print(self.dead_sensors)
             if self.dead_sensors[sensor]: 
                 continue
             no_Nones = True
@@ -27,7 +28,7 @@ class SensorTracker():
                 # increment if any readings are None
                 if r.value is None: 
                     self.sensor_errors[sensor] += 1
-                    logger.error(f"Error detected on {sensor}, reading was {r.name} with {r.value} {r.unit}")
+                    logger.error(f"Error detected on '{sensor}': reading was '{r.name}' with '{r.value} {r.unit}'")
                     no_Nones = False
                     break
             # reset error counter if no errors
@@ -45,9 +46,9 @@ class SensorTracker():
              self.sensor_error_sol["i2c_cycle"] = False
 
         if first_power_cycles or second_power_cycles:
-            self.sensor_error_sol["power_cycle_ss"] = True
+            self.sensor_error_sol["power_cycle"] = True
         else: 
-             self.sensor_error_sol["power_cycle_ss"] = False
+             self.sensor_error_sol["power_cycle"] = False
 
         if first_i2c_cycles:
             for s in first_i2c_cycles.keys():
@@ -62,10 +63,9 @@ class SensorTracker():
             for s in second_power_cycles.keys():
                 logger.info(f"{s} caused a second instance of a sensor suite power cycle (if available)")
 
-        declare_dead_sensors = [s for s, ec in self.sensor_errors.items() if ec == 7]
+        declare_dead_sensors = [s for s, ec in self.sensor_errors.items() if ec == self.dead_trig]
 
         if declare_dead_sensors:
-            print("declaring dead sensors")
             for s in declare_dead_sensors:
                 self.sensor_errors[s] = 0
                 self.dead_sensors[s] = True

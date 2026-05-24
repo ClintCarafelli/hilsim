@@ -279,7 +279,7 @@ def test_advanced_connection(sim_Controls, cl_1, cl_2, cl_3, confirmed):
             mock_retires.assert_called_once()
             mock_reconnect.assert_called_once()
             mock_power_cycle.assert_not_called()
-        elif cl_3: 
+        elif cl_3:
             mock_retires.assert_called_once()
             mock_reconnect.assert_called_once()
             mock_power_cycle.assert_called_once()

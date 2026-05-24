@@ -3,7 +3,7 @@ def LoadTOML(path: str) -> dict:
     try:
         try:
             import tomllib         
-        except ImportError:
+        except:
             import tomli as tomllib
     except ImportError:
         raise RuntimeError("No TOML parser found. On Python < 3.11" \

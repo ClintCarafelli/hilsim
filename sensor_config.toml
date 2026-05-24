@@ -27,11 +27,11 @@ sim_all         = "True"
 # Number describes how many subsequent erroneous readings are needed
 # to trigger the recovery method
 [sensor_error_program]
-first_i2c_cycle    = 3 
-second_i2c_cycle   = 4 
-first_power_cycle  = 5 
-second_power_cycle = 6 
-dead               = 7
+first_i2c_cycle    = 4 
+second_i2c_cycle   = 5 
+first_power_cycle  = 6 
+second_power_cycle = 7 
+dead               = 8
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Soil sensor configurations

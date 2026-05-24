@@ -69,7 +69,7 @@ class SensorTracker():
             for s in declare_dead_sensors:
                 self.sensor_errors[s] = 0
                 self.dead_sensors[s] = True
-                logger.info(f"{s} decared dead. No further recovery measures for {s}")
+                logger.critical(f"{s} declared dead. No further recovery measures for {s}")
 
         return self.sensor_error_sol
     

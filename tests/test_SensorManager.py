@@ -141,7 +141,6 @@ def sensor_manager(base_config, mock_driver_registry):
     with patch.dict("src.SensorManager.driver_registry", mock_driver_registry):
         yield SensorManager(base_config, i2c_bus, False)
 
-
 def test_initialize_all_success(sensor_manager): 
     with patch("src.SensorManager.logger") as mock_logger: 
         sensor_manager.initialize_all()
@@ -183,10 +182,10 @@ def test_initialize_all_fail_skip(sensor_manager, exception_driver_initializatio
 @pytest.fixture
 def success_sensor_driver_readers():
     mock_driver_1 = MagicMock()
-    mock_driver_1.initialized.return_value = True
+    mock_driver_1.initialized = True
     mock_driver_1.read.return_value = [Reading("speed", 2, "m/s")]
     mock_driver_2 = MagicMock()
-    mock_driver_2.initialized.return_value = True
+    mock_driver_2.initialized = True
     mock_driver_2.read.return_value = [Reading("weight", 4, "kg"), Reading("temp", 273, "K")]
     mock_sensors = {"sensor_1": mock_driver_1,
                     "sensor_2": mock_driver_2}
@@ -213,10 +212,10 @@ def test_read_all_sensors_success(sensor_manager, success_sensor_driver_readers)
 @pytest.fixture
 def semi_fail_sensor_driver_readers():
     mock_driver_1 = MagicMock()
-    mock_driver_1.initialized.return_value = True
+    mock_driver_1.initialized = True
     mock_driver_1.read.return_value = [Reading("speed", 2, "m/s")]
     mock_driver_2 = MagicMock()
-    mock_driver_2.initialized.return_value = True
+    mock_driver_2.initialized = True
     mock_driver_2.read.side_effect = Exception("failed reading")
     mock_sensors = {"sensor_1": mock_driver_1,
                     "sensor_2": mock_driver_2}
@@ -280,6 +279,14 @@ def fake_sensors_drivers():
                     "sensor_2": mock_driver_2}
     return mock_sensors
 
+
+def test_initialize_unknown_sensor(sensor_manager, fake_sensors_drivers): 
+    sensor_manager._sensors = fake_sensors_drivers
+    with patch("src.SensorManager.logger") as mock_logger:
+        with pytest.raises(SensorInitError):
+            sensor_manager.initialize("not_a_sensor")
+        assert mock_logger.error.call_count == 1
+
 def test_initialize_success(sensor_manager, fake_sensors_drivers): 
     sensor_manager._sensors = fake_sensors_drivers
     with patch("src.SensorManager.logger") as mock_logger:
@@ -320,7 +327,7 @@ def test_read_success(sensor_manager, success_sensor_driver_readers):
         assert results["sensor_1"][0].unit  == "m/s"
         assert len(results["sensor_1"])     == 1
 
-def test_read_success(sensor_manager, semi_fail_sensor_driver_readers):
+def test_read_fail(sensor_manager, semi_fail_sensor_driver_readers):
     sensor_manager._sensors = semi_fail_sensor_driver_readers
     with patch("src.SensorManager.logger") as mock_logger:
         results = sensor_manager.read("sensor_2")

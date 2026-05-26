@@ -37,7 +37,7 @@ dead               = 8
 # Soil sensor configurations
 [sensors.STEMMA1]
 description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
-sensor_num_measurements = 2
+num_measurements        = 2
 sensor_num              = 1
 i2c_address             = "0x36"
 driver                  = "STEMMA1_driver"
@@ -61,7 +61,7 @@ accuracy = 2
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [sensors.STEMMA2]
 description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
-sensor_num_measurements = 2
+num_measurements        = 2
 sensor_num              = 1
 i2c_address             = "0x37"
 driver                  = "STEMMA2_driver"
@@ -86,7 +86,7 @@ accuracy = 2
 [sensors.STEMMA3]
 description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
 sensor_num              = 1
-sensor_num_measurements = 2
+num_measurements        = 2
 i2c_address             = "0x38"
 driver                  = "STEMMA3_driver"
 sim                     = "TRUE"
@@ -111,7 +111,7 @@ accuracy = 2
 [sensors.SCD30]
 description = "Measures CO2 (ppm), relative humdity (%), and temperature (C)"
 sensor_num              = 1
-sensor_num_measurements = 3
+num_measurements        = 3
 driver                  = "SCD30_driver"
 sim                     = "True"
 failure_rate            = 1
@@ -142,7 +142,7 @@ accuracy = 0.4
 [sensors.BMP388]
 description             = "measures pressure (hpa) and air temp (C)"
 sensor_num              = 1
-sensor_num_measurements = 2
+num_measurements        = 2
 driver                  = "BMP388_driver"
 sim                     = "True"
 failure_rate            = 0
@@ -166,7 +166,7 @@ accuracy = 0.50
 [sensors.ME2]
 description             = "measures oxygen (% of air mass)"
 sensor_num              = 1
-sensor_num_measurements = 1
+num_measurements        = 1
 collection_number       = 10
 IIC_mode                = 0x01
 i2c_address             = 0x73
@@ -186,7 +186,7 @@ accuracy = 3.15
 [sensors.INA260]
 description             = "measures voltage (V), current (mA), and power (mW) using a shunt resistor"
 sensor_num              = 1
-sensor_num_measurements = 3
+num_measurements        = 3
 driver                  = "INA260_driver" 
 sim                     = "True"
 failure_rate            = 0

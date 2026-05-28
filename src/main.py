@@ -6,6 +6,9 @@ from src.SensorManager import SensorManager
 from src.SensorTracker import SensorTracker
 from src.I2CBus import I2CBus
 from pathlib import Path
+from rich.console import Console
+from rich.live import Live
+from rich.table import Table
 
 from src.CreateFakeSensors import CreateFakeSensors
 
@@ -33,6 +36,16 @@ sensor_manager = SensorManager(sensor_config, i2c_bus, fake_sensors.sensors, Tru
 sensor_manager.initialize_all()
 sensor_tracker = SensorTracker(sensor_config)
 
+
+header_list = sensor_manager.build_header()
+header_list.append("time (UNIX)")
+console = Console()
+table = Table(title="Sensor Readings")
+for header in header_list: 
+    table.add_column(header)
+
+
+
 # General parameters
 pca = True    # defines if power cycling the USB ports is avaliable or not 
 
@@ -40,16 +53,27 @@ pca = True    # defines if power cycling the USB ports is avaliable or not
 status_dict = {"solenoid": "off", "servo": "off", "purple_lights": "on", "white_lights": "off"}
 sensor_manager._sensors["INA260"].device.status = status_dict
 
-while True:
-    print("-"*30 + "Readings" + "-"*30)
-    data = sensor_manager.read_all()
-    for sensor_id, readings in data.items():
-        print(f"[{sensor_id}]")
-        if readings:
-            for r in readings: 
-                print(f"    {r.name} {r.value} {r.unit}")
-        else: 
-            print("NO DATA")
-    sensor_tracker.track(data)
-    print()
-    time.sleep(2)
+with Live(table, refresh_per_second=4):
+    while True:
+        #print("-"*30 + "Readings" + "-"*30)
+        data = sensor_manager.read_all()
+        data_row = []
+        for sensor_id, readings in data.items():
+            #print(f"[{sensor_id}]")
+            if readings:
+                for r in readings: 
+                    #print(f"    {r.name} {r.value} {r.unit}")
+                    if r.value is None: 
+                        data_row.append("NONE")
+                    else:
+                        data_row.append(str(round(r.value, 2)))
+            else: 
+                print("NO DATA")
+        data_row.append(str(round(time.time(), 2)))
+        table.add_row(*data_row)
+        console.print(table)
+        #print()
+
+        sensor_tracker.track(data)
+  
+        time.sleep(2)

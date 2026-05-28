@@ -21,7 +21,7 @@ primary_author = "Clint Carafelli"
 
 [sensor_params]
 # enabled sensored contains the sensor_ids
-enabled_sensors = ["SCD30", "BMP388", "STEMMA1", "STEMMA2", "STEMMA3", "ME2", "INA260"]
+enabled_sensors = ["STEMMA1", "STEMMA2", "STEMMA3","SCD30", "BMP388", "ME2", "INA260"]
 sim_all         = "True"
 
 # Number describes how many subsequent erroneous readings are needed

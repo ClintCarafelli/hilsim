@@ -111,6 +111,17 @@ class SensorManager:
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
                 results[sensor_id] = [Reading(None, None, None)] * self.config_dict["sensors"][sensor_id]["num_measurements"]
         return results
+    
+    def build_header(self) -> dict:
+        header_list = []
+        for sensor_id, data in self.config_dict["sensors"].items():
+            if sensor_id in self.config_dict["sensor_params"]["enabled_sensors"]:
+                for i in range(data["num_measurements"]):
+                    header = data["readings"][i]["name"] + " ("  + data["readings"][i]["units"] + ")"
+                    header_list.append(header)
+
+        return header_list
+
             
 
              

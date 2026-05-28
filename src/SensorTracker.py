@@ -20,7 +20,6 @@ class SensorTracker():
     def track(self, results: dict) -> dict:
         """ Determine how many subsequent errors occur on each sensor"""
         for sensor, readings in results.items():
-            print(self.dead_sensors)
             if self.dead_sensors[sensor]: 
                 continue
             no_Nones = True

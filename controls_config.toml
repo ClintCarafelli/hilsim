@@ -14,8 +14,31 @@ connection_cycles = 2
 power_cycles      = 3
 
 
-[CO2]
-channel         = 6
-time            = 50
+[solenoid]
+channel = 6
+time    = 150
+
+[servo]
+channel    = 4
+on_clicks  = 1900
+off_clicks = 500
+time       = 500
+
+[purple_lights]
+channel = 2
+g       = 0
+r       = 100
+b       = 100
+w       = 100
+
+[white_lights]
+channel = 2
+g       = 0
+r       = 0
+b       = 0
+w       = 100
+
+
+
 
 

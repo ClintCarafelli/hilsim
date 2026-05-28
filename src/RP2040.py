@@ -51,7 +51,6 @@ class RP2040Communication:
             logger.error(f"Could not close serial port: {e}")
 
     def _read_and_write(self, send_msg: str, receive_msg: str) -> bool:
-
         try: 
             received_data = []
             logger.info(f"sending message '{send_msg}' to RP2040")
@@ -164,7 +163,6 @@ class RP2040AdvancedErrorHandling:
 
 class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
     def __init__(self, config_dict: dict, **kwargs) -> None:
-        self.config_dict = config_dict
         super().__init__(config_dict=config_dict, **kwargs)
 
     def connect(self):
@@ -240,8 +238,16 @@ class Controls(RP2040Communication, RP2040AdvancedErrorHandling):
         msg = "Lights, " + str(channel) + ", " + str(g) + ", " + str(r) + ", "  + str(b) + ", " + str(w)
         confirmation = self.full_communication_handling(msg, msg)
         return confirmation
-
     
+    # Highly specialized methods below, all of which basically wrap one of the more
+    # general methods above with specific values from the controls_config.toml. Added for
+    # clarity in the main function and cleaner updating of the hardware status dictonary. 
+    def inject_CO2(self, pca):
+       confirmed = self.GPIO(pca, self.config["solenoid"]["channel"], 1, self.config["solenoid"]["time"])
+       if confirmed: 
+           pass
+           
+
 class FakeSerial():
     def __init__(self, config: dict) -> None:
         self.failure_rate   = config["RP_connection"]["super_sim_fr"]

@@ -1,23 +1,27 @@
 from src.BaseSensor import Reading, BaseSensor
 from src.SensorExceptions import SensorInitError, SensorReadError
 from random import random
+from src.FakeSTEMMA import FakeSTEMMA
 # If sim=False, the following will run: from adafruit_seesaw.seesaw import Seesaw
 
 class STEMMADriver(BaseSensor):
 
-    def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any) -> None: 
+    def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeSTEMMA) -> None: 
         super().__init__(sensor_id, config_dict, i2c_bus)
-        self.sim = config_dict["sim"]
-        self.failure_rate = config_dict["failure_rate"]
-        self.i2c_address = config_dict["i2c_address"]
-        self.i2c_bus = i2c_bus
+        self.sim                     = config_dict["sim"]
+        self.i2c_address             = config_dict["i2c_address"]
+        self.i2c_bus                 = i2c_bus
+        self.fake_sensor             = fake_sensor
+        self.sim_fail_initialization = config_dict["sim_fail_initialization"]
+        self.device                  = None 
 
-    
     def initialize(self):
         """ initialize the STEMMA soil moisture sensor driver"""
         try:
             if self.sim:
-                self.device = FakeSTEMMA(self.failure_rate, self.readings_meta_data)
+                if self.sim_fail_initialization:
+                    raise Exception("simulated failed initialization")
+                self.device = self.fake_sensor
                 self.initialized = True
             else:  
                 from adafruit_seesaw.seesaw import Seesaw
@@ -40,41 +44,4 @@ class STEMMADriver(BaseSensor):
             raise SensorReadError(self.sensor_id, str(e)) from e
         
         return [Reading(m["name"], val, m["units"]) for val, m in zip(vals, self.readings_meta_data)]
-      
-class FakeSTEMMA:
-    """ Provides a fake device / methods for the Steamma soil moisture sensor"""
-    def __init__(self, failure_rate: float, readings_meta_data: dict) -> None:
-        self.failure_rate = failure_rate
-        self.readings_meta_data = readings_meta_data
-        self.counter = 0
-        self.rand_num = 0.5
 
-    def moisture_read(self) -> float | None:
-        if self._get_same_random() < self.failure_rate:
-            raise Exception("simulated failed reading")
-        else: 
-            return self._in_range("moisture")
-        
-    def get_temp(self) -> float | None:
-        if self._get_same_random() < self.failure_rate:
-            raise Exception("simulated failed reading")
-        else: 
-            return self._in_range("temp")
-
-    def _in_range(self, name: str) -> float:
-         """find random value between min and max of the result"""
-         i: int = next(i for i, meta in enumerate(self.readings_meta_data) if meta["name"] == name)
-         val: float = self.readings_meta_data[i]["min"] + random() * (self.readings_meta_data[i]["max"] -
-                                                                self.readings_meta_data[i]["min"])
-         return val
-    
-    # See comments in BMP388 Driver for information about this function and why the random number is
-    # constructed in this way
-    def _get_same_random(self) -> float:
-        # reset random number every 2 counts since this function gets called twice for a full sensor read
-        self.counter += 1
-        if self.counter % 2 == 0:
-            self.rand_num = random()
-            return self.rand_num
-        else: 
-            return self.rand_num

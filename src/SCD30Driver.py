@@ -2,22 +2,27 @@ from src.BaseSensor import Reading, BaseSensor
 from src.SensorExceptions import SensorInitError, SensorReadError
 from datetime import datetime, timedelta
 from  random import random
+from src.FakeSCD30 import FakeSCD30
+# if sim=False, will import SCD30 from scd30_i2c
 
 class SCD30Driver(BaseSensor):
 
-    def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any) -> None:
+    def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeSCD30) -> None:
         super().__init__(sensor_id, config_dict, i2c_bus)
-        self.sim = config_dict["sim"]
-        self.failure_rate = config_dict["failure_rate"]
-        self.device = None
+        self.sim                     = config_dict["sim"]
+        self.sim_fail_initialization = config_dict["sim_fail_initialization"]
+        self.device                  = None
+        self.fake_sensor             = fake_sensor 
 
     def initialize(self) -> None:
         """ Initialize the SCD30 sensor"""
         try: 
             if self.sim:
+                if self.sim_fail_initialization: 
+                    raise Exception("simulated initialization failure")
                 # set_measurement_interval is hard coded because that is the absolute maximum rate the sensor can 
                 # read. Slower reading rates are controlled in the main.py /config.txt file
-                self.device = FakeSCD30(self.failure_rate, self.readings_meta_data)
+                self.device = self.fake_sensor
                 self.device.set_measurement_interval(2) 
                 self.device.start_periodic_measurement()
                 self.initialized = True

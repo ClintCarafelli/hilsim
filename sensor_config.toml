@@ -42,7 +42,8 @@ sensor_num              = 1
 i2c_address             = "0x36"
 driver                  = "STEMMA1_driver"
 sim                     = "TRUE"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false
 
 [[sensors.STEMMA1.readings]]
 name     = "moisture"
@@ -66,7 +67,8 @@ sensor_num              = 1
 i2c_address             = "0x37"
 driver                  = "STEMMA2_driver"
 sim                     = "TRUE"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false
 
 [[sensors.STEMMA2.readings]]
 name     = "moisture"
@@ -90,7 +92,8 @@ num_measurements        = 2
 i2c_address             = "0x38"
 driver                  = "STEMMA3_driver"
 sim                     = "TRUE"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false 
 
 [[sensors.STEMMA3.readings]]
 name     = "moisture"
@@ -114,7 +117,9 @@ sensor_num              = 1
 num_measurements        = 3
 driver                  = "SCD30_driver"
 sim                     = "True"
-failure_rate            = 1
+failure_rate            = 0.1
+sim_fail_initialization = false
+
 
 [[sensors.SCD30.readings]]
 name     = "CO2"
@@ -145,7 +150,8 @@ sensor_num              = 1
 num_measurements        = 2
 driver                  = "BMP388_driver"
 sim                     = "True"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false
 
 [[sensors.BMP388.readings]]
 name     = "pressure"
@@ -172,7 +178,8 @@ IIC_mode                = 0x01
 i2c_address             = 0x73
 driver                  = "ME2_driver"
 sim                     = "True"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false
 
 [[sensors.ME2.readings]]
 name     = "oxygen"
@@ -189,7 +196,8 @@ sensor_num              = 1
 num_measurements        = 3
 driver                  = "INA260_driver" 
 sim                     = "True"
-failure_rate            = 0
+failure_rate            = 0.1
+sim_fail_initialization = false
 
 [[sensors.INA260.readings]]
 name     = "voltage"
@@ -211,6 +219,34 @@ units    = "mW"
 min      = 0
 max      = 600000
 accuracy = 878.31 
+
+[sensors.INA260.base_states.power_supply]
+voltage  = 12.8
+noise    = 0.001
+
+[sensors.INA260.base_states.computer]
+current = 0.33
+noise   = 0.03
+
+[sensors.INA260.hardware_states.solenoid]
+on     = 1.06
+off    = 0
+noise  = 0.01
+
+[sensors.INA260.hardware_states.servo]
+on      = 0.588
+off     = 0
+noise   = 0.05
+
+[sensors.INA260.hardware_states.purple_lights]
+on      = 0.7
+off     = 0
+noise   = 0.001
+
+[sensors.INA260.hardware_states.white_lights]
+on      = 0.30
+off     = 0
+noise   = 0.15
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Air Velocity configurations

@@ -8,20 +8,21 @@ logger = logging.getLogger(__name__)
 class SensorManager:
     """ This class manages the sensors suite"""
 
-    def __init__(self, config_dict: dict, i2c_bus: any, skip_failed_init: bool = False) -> None:
+    def __init__(self, config_dict: dict, i2c_bus: any, fake_sensors: dict, skip_failed_init: bool = False) -> None:
         self.skip_failed_init                = skip_failed_init
         self.config_dict                     = config_dict
         self._sensors: dict[str, BaseSensor] = {}
         self.i2c_bus                         = i2c_bus
-        self._build_sensors(config_dict)
+        self.fake_sensors                    = fake_sensors
+        self._build_sensors()
 
-    def _build_sensors(self, config_dict: dict) -> None: 
+    def _build_sensors(self) -> None: 
         """ Just maps the self._sensors[sensor_id] to the driver class so that 
         the sensors functions can be called self._sensors[sensor_id]
          by way of example: you can do self._sensors[sensor_id].read() """
         
-        self.enabled_sensors: list[dict] = config_dict['sensor_params'].get("enabled_sensors", [])
-        all_sensor_configs: dict         = config_dict.get("sensors", {})
+        self.enabled_sensors: list[dict] = self.config_dict['sensor_params'].get("enabled_sensors", [])
+        all_sensor_configs: dict         = self.config_dict.get("sensors", {})
 
         if not self.enabled_sensors:
             raise ConfigError("all_sensors", "You have no enabled sensors " + 
@@ -35,7 +36,7 @@ class SensorManager:
             
             sensor_config = all_sensor_configs[sensor_id]
             driver_name = sensor_config.get("driver", [])
-
+    
             if not driver_name:
                 raise ConfigError(sensor_id, "missing 'driver' in sensor_config.toml file.")
             
@@ -44,7 +45,8 @@ class SensorManager:
                     f"Registered drivers: {list(driver_registry)}")
             
             driver_class = driver_registry[driver_name]
-            self._sensors[sensor_id] = driver_class(sensor_id, sensor_config, self.i2c_bus)
+            fake_sensor = self.fake_sensors[sensor_id]
+            self._sensors[sensor_id] = driver_class(sensor_id, sensor_config, self.i2c_bus, fake_sensor)
             logger.info("Registered %s → %s", sensor_id, driver_class.__name__)
             
     def initialize_all(self) -> None: 
@@ -70,14 +72,14 @@ class SensorManager:
         for sensor_id, sensor in self._sensors.items():
             if not sensor.initialized:
                 logger.warning("Skipping %s : not initialized", sensor_id)
-                results[sensor_id] = [None] * self.config_dict["sensors"][sensor_id]["num_measurements"]
+                results[sensor_id] = [Reading(None, None, None)] * self.config_dict["sensors"][sensor_id]["num_measurements"]
                 continue 
             try: 
                 logger.info("Reading %s...", sensor_id)
                 results[sensor_id] = sensor.read()
             except Exception as e: 
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
-                results[sensor_id] = [None] * self.config_dict["sensors"][sensor_id]["num_measurements"]
+                results[sensor_id] = [Reading(None, None, None)] * self.config_dict["sensors"][sensor_id]["num_measurements"]
         return results
     
     def initialize(self, sensor_id: str) -> None:
@@ -107,7 +109,7 @@ class SensorManager:
                 results[sensor_id] = self._sensors[sensor_id].read()
             except Exception as e: 
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
-                results[sensor_id] = [None] * self.config_dict["sensors"][sensor_id]["num_measurements"]
+                results[sensor_id] = [Reading(None, None, None)] * self.config_dict["sensors"][sensor_id]["num_measurements"]
         return results
             
 

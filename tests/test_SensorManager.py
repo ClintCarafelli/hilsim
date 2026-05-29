@@ -100,7 +100,7 @@ def test_setup(base_config, mock_fake_sensor_registry):
                             False)
         assert sm.skip_failed_init is False
         assert sm.i2c_bus is i2c_bus
-        assert sm._sensors == {}
+        assert sm.sensors == {}
         mock_build_sensors.assert_called_once()
 
 #------------------------------------------------------------------------------
@@ -122,11 +122,11 @@ def test_build_rr_sensors_success(sensor_manager_bp,
     with patch.dict("src.SensorManager.driver_registry", mock_driver_registry):
         sensor_manager_bp._build_sensors()
         assert sensor_manager_bp.enabled_sensors == ["sensor_1", "sensor_2"]
-        list_of_keys = list(sensor_manager_bp._sensors.keys())
+        list_of_keys = list(sensor_manager_bp.sensors.keys())
         assert list_of_keys == ["sensor_1", "sensor_2"]
         assert len(list_of_keys) == 2
-        assert sensor_manager_bp._sensors["sensor_1"] is not None
-        assert sensor_manager_bp._sensors["sensor_2"] is not None
+        assert sensor_manager_bp.sensors["sensor_1"] is not None
+        assert sensor_manager_bp.sensors["sensor_2"] is not None
 
 def test_build_no_enabled_sensors(sensor_manager_bp, no_enabled_sensors_config):
     sensor_manager_bp.config_dict = no_enabled_sensors_config
@@ -195,7 +195,7 @@ def exception_driver_initializations():
 def test_initialize_all_fail_no_skip(sensor_manager, 
                                      exception_driver_initializations):
 
-    sensor_manager._sensors = exception_driver_initializations
+    sensor_manager.sensors = exception_driver_initializations
     with patch("src.SensorManager.logger") as mock_logger: 
         with pytest.raises(SensorInitError):
             sensor_manager.initialize_all()
@@ -205,14 +205,14 @@ def test_initialize_all_fail_skip(sensor_manager,
                                   exception_driver_initializations):
     sensor_manager.skip_failed_init = True
     surviving_sensors = copy.deepcopy(exception_driver_initializations)
-    sensor_manager._sensors = exception_driver_initializations
-    assert sensor_manager._sensors != {}
+    sensor_manager.sensors = exception_driver_initializations
+    assert sensor_manager.sensors != {}
     with patch("src.SensorManager.logger") as mock_logger: 
         sensor_manager.initialize_all()
         assert mock_logger.info.call_count == 3
         assert mock_logger.critical.call_count == 1
         surviving_sensors.pop("sensor_1")
-        assert sensor_manager._sensors == surviving_sensors
+        assert sensor_manager.sensors == surviving_sensors
 
 #------------------------------------------------------------------------------
 #  Test read_all() method
@@ -232,7 +232,7 @@ def success_sensor_driver_readers():
 
 def test_read_all_sensors_success(sensor_manager, 
                                   success_sensor_driver_readers):
-    sensor_manager._sensors = success_sensor_driver_readers
+    sensor_manager.sensors = success_sensor_driver_readers
     with patch("src.SensorManager.logger") as mock_logger:
         results = sensor_manager.read_all()
         assert list(results.keys()) == ["sensor_1", "sensor_2"]
@@ -262,7 +262,7 @@ def semi_fail_sensor_driver_readers():
     return mock_sensors
 
 def test_read_all_sensors_fail(sensor_manager, semi_fail_sensor_driver_readers):
-    sensor_manager._sensors = semi_fail_sensor_driver_readers
+    sensor_manager.sensors = semi_fail_sensor_driver_readers
     with patch("src.SensorManager.logger") as mock_logger:
         results = sensor_manager.read_all()
         assert list(results.keys()) == ["sensor_1", "sensor_2"]
@@ -292,7 +292,7 @@ def some_init_drivers():
     return mock_sensors
 
 def test_not_initialized_catch(sensor_manager, some_init_drivers):
-        sensor_manager._sensors = some_init_drivers
+        sensor_manager.sensors = some_init_drivers
         with patch("src.SensorManager.logger") as mock_logger:
             results = sensor_manager.read_all()
             assert list(results.keys()) == ["sensor_1", "sensor_2"]
@@ -327,28 +327,28 @@ def fake_sensors_drivers():
     return mock_sensors
 
 def test_initialize_unknown_sensor(sensor_manager, fake_sensors_drivers): 
-    sensor_manager._sensors = fake_sensors_drivers
+    sensor_manager.sensors = fake_sensors_drivers
     with patch("src.SensorManager.logger") as mock_logger:
         with pytest.raises(SensorInitError):
             sensor_manager.initialize("not_a_sensor")
         assert mock_logger.error.call_count == 1
 
 def test_initialize_success(sensor_manager, fake_sensors_drivers): 
-    sensor_manager._sensors = fake_sensors_drivers
+    sensor_manager.sensors = fake_sensors_drivers
     with patch("src.SensorManager.logger") as mock_logger:
         sensor_manager.initialize("sensor_1")
         assert mock_logger.info.call_count == 2
 
 def test_initialize_fail_skip(sensor_manager, exception_driver_initializations): 
     sensor_manager.skip_failed_init = True
-    sensor_manager._sensors = exception_driver_initializations
+    sensor_manager.sensors = exception_driver_initializations
     with patch("src.SensorManager.logger") as mock_logger:
         sensor_manager.initialize("sensor_1")
         assert mock_logger.info.call_count == 1
         assert mock_logger.critical.call_count == 1
 
 def test_initialize_fail_raise(sensor_manager, exception_driver_initializations): 
-    sensor_manager._sensors = exception_driver_initializations
+    sensor_manager.sensors = exception_driver_initializations
     with patch("src.SensorManager.logger") as mock_logger:
         with pytest.raises(SensorInitError):
             sensor_manager.initialize("sensor_1")
@@ -364,7 +364,7 @@ def test_read_nonexistent(sensor_manager):
         mock_logger.critical.assert_called_once()
 
 def test_read_success(sensor_manager, success_sensor_driver_readers):
-    sensor_manager._sensors = success_sensor_driver_readers
+    sensor_manager.sensors = success_sensor_driver_readers
     with patch("src.SensorManager.logger") as mock_logger:
         results = sensor_manager.read("sensor_1")
         mock_logger.info.assert_called_once()
@@ -374,7 +374,7 @@ def test_read_success(sensor_manager, success_sensor_driver_readers):
         assert len(results["sensor_1"])     == 1
 
 def test_read_fail(sensor_manager, semi_fail_sensor_driver_readers):
-    sensor_manager._sensors = semi_fail_sensor_driver_readers
+    sensor_manager.sensors = semi_fail_sensor_driver_readers
     with patch("src.SensorManager.logger") as mock_logger:
         results = sensor_manager.read("sensor_2")
         mock_logger.info.assert_called_once()

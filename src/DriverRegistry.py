@@ -4,7 +4,7 @@ from src.STEMMADriver import STEMMADriver
 from src.ME2Driver import ME2Driver
 from src.INA260Driver import INA260Driver
 
-from src.FakeINA260 import FakeINA260
+from src.fake_ina260 import FakeINA260
 from src.FakeBMP388 import FakeBMP388
 from src.fake_me2 import FakeME2
 from src.FakeSCD30 import FakeSCD30

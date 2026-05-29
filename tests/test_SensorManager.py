@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from src.SensorManager import SensorManager
 from src.SensorExceptions import SensorInitError, SensorReadError, ConfigError
 import copy
-from src.BaseSensor import Reading
+from src.base_driver import Reading
 
 #------------------------------------------------------------------------------
 #Setup

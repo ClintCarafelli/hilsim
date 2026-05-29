@@ -1,10 +1,10 @@
-from src.BaseSensor import Reading, BaseSensor
+from src.base_driver import Reading, BaseDriver
 from src.SensorExceptions import SensorInitError, SensorReadError
 from src.FakeBMP388 import FakeBMP388
 from  random import random
 # If sim=False: will import adafruit_bmp3xx
 
-class BMP388Driver(BaseSensor):
+class BMP388Driver(BaseDriver):
     def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeBMP388) -> None:
         super().__init__(sensor_id, config_dict, i2c_bus)
         self.sim                     = config_dict["sim"]

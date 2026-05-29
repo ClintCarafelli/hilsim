@@ -2,7 +2,7 @@ import pytest
 import operator
 from unittest.mock import patch, MagicMock
 from src.SensorTracker import SensorTracker
-from src.BaseSensor import Reading
+from src.base_driver import Reading
 
 
 config_dict = {"sensor_error_program":

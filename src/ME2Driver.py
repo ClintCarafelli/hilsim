@@ -1,13 +1,13 @@
 """Drive the ME2 sensor, including initialize and read"""
 from typing import Any
-from src.BaseSensor import Reading, BaseSensor
+from src.base_driver import Reading, BaseDriver
 from src.SensorExceptions import SensorInitError, SensorReadError
 from src.fake_me2 import FakeME2
 
 # If sim=False, the following will run: DFRobot_Oxygen import DFRobot_Oxygen_IIC
 
 
-class ME2Driver(BaseSensor):
+class ME2Driver(BaseDriver):
     """Drive the ME2 sensor, including initialize and read"""
     def __init__(
         self, sensor_id: str, config_dict: dict, i2c_bus: Any, fake_sensor: FakeME2

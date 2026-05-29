@@ -1,9 +1,9 @@
-from src.BaseSensor import BaseSensor, Reading
+from src.base_driver import BaseDriver, Reading
 from src.SensorExceptions import SensorInitError, SensorReadError
 from random import random
 from src.fake_ina260 import FakeINA260
 
-class INA260Driver(BaseSensor): 
+class INA260Driver(BaseDriver): 
     def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeINA260) -> None: 
         super().__init__(sensor_id, config_dict, i2c_bus)
         self.sim             = config_dict["sim"]

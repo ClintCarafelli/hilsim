@@ -53,7 +53,7 @@ def test_initialize_success(real_driver):
     with patch.dict("sys.modules", {"DFRobot_Oxygen": 
         MagicMock(DFRobot_Oxygen_IIC=mock_IIC_class)}):
         real_driver.initialize()
-        mock_IIC_class.assert_called_once_with(real_driver.IIC_mode, 
+        mock_IIC_class.assert_called_once_with(real_driver.iic_mode, 
             real_driver.i2c_address)
         assert real_driver.initialized is True
         assert real_driver.device is mock_device

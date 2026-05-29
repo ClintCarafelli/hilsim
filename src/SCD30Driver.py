@@ -1,11 +1,11 @@
-from src.BaseSensor import Reading, BaseSensor
+from src.base_driver import Reading, BaseDriver
 from src.SensorExceptions import SensorInitError, SensorReadError
 from datetime import datetime, timedelta
 from  random import random
 from src.FakeSCD30 import FakeSCD30
 # if sim=False, will import SCD30 from scd30_i2c
 
-class SCD30Driver(BaseSensor):
+class SCD30Driver(BaseDriver):
 
     def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeSCD30) -> None:
         super().__init__(sensor_id, config_dict, i2c_bus)

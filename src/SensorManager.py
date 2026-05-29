@@ -1,6 +1,6 @@
 """"""
 import logging
-from src.BaseSensor import Reading, BaseSensor
+from src.base_driver import Reading, BaseDriver
 from src.SensorExceptions import SensorInitError, SensorReadError, ConfigError
 from  src.DriverRegistry import driver_registry
 
@@ -15,7 +15,7 @@ class SensorManager:
     def __init__(self, config_dict: dict, i2c_bus: any, fakesensors: dict, skip_failed_init: bool = False) -> None:
         self.skip_failed_init                = skip_failed_init
         self.config_dict                     = config_dict
-        self.sensors: dict[str, BaseSensor] = {}
+        self.sensors: dict[str, BaseDriver] = {}
         self.i2c_bus                         = i2c_bus
         self.fakesensors                    = fakesensors
         self._build_sensors()

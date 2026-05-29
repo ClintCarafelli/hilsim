@@ -68,9 +68,7 @@ class FakeINA260:
         """return the same random n times, here n=3"""
         # reset random number every 3 counts since this function gets called
         # three times for a full sensor read
-        print(self.counter)
         if self.counter % 3 == 0:
-            print("in here")
             self.counter += 1
             self.rand_num = random()
             return self.rand_num

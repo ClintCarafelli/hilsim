@@ -1,10 +1,10 @@
-from src.BaseSensor import Reading, BaseSensor
+from src.base_driver import Reading, BaseDriver
 from src.SensorExceptions import SensorInitError, SensorReadError
 from random import random
 from src.FakeSTEMMA import FakeSTEMMA
 # If sim=False, the following will run: from adafruit_seesaw.seesaw import Seesaw
 
-class STEMMADriver(BaseSensor):
+class STEMMADriver(BaseDriver):
 
     def __init__(self, sensor_id: str, config_dict: dict, i2c_bus: any, fake_sensor: FakeSTEMMA) -> None: 
         super().__init__(sensor_id, config_dict, i2c_bus)

@@ -1,6 +1,6 @@
 from src.scd30_driver import SCD30Driver
 from src.bmp388_driver import BMP388Driver
-from src.STEMMADriver import STEMMADriver
+from src.stemma_driver import STEMMADriver
 from src.me2_driver import ME2Driver
 from src.ina260_driver import INA260Driver
 
@@ -8,7 +8,7 @@ from src.fake_ina260 import FakeINA260
 from src.fake_bmp388 import FakeBMP388
 from src.fake_me2 import FakeME2
 from src.fake_scd30 import FakeSCD30
-from src.FakeSTEMMA import FakeSTEMMA
+from src.fake_stemma import FakeSTEMMA
 
 
 # Map the class that drives the sensor to the driver field in the config.toml file

@@ -1,14 +1,17 @@
 """Drive the ME2 sensor, including initialize and read"""
+
 from typing import Any
-from src.base_driver import Reading, BaseDriver
-from src.SensorExceptions import SensorInitError, SensorReadError
+
+from src.base_driver import BaseDriver, Reading
 from src.fake_me2 import FakeME2
+from src.SensorExceptions import SensorInitError, SensorReadError
 
 # If sim=False, the following will run: DFRobot_Oxygen import DFRobot_Oxygen_IIC
 
 
 class ME2Driver(BaseDriver):
     """Drive the ME2 sensor, including initialize and read"""
+
     def __init__(
         self, sensor_id: str, config_dict: dict, i2c_bus: Any, fake_sensor: FakeME2
     ) -> None:
@@ -19,7 +22,6 @@ class ME2Driver(BaseDriver):
         self.collection_number = config_dict["collection_number"]
         self.sim_fail_initialization = config_dict["sim_fail_initialization"]
         self.fake_sensor = fake_sensor
-        self.device = None
         self.sensor_id = sensor_id
 
     def initialize(self) -> None:
@@ -33,7 +35,8 @@ class ME2Driver(BaseDriver):
                 self.device = self.fake_sensor
                 self.initialized = True
             else:
-                from DFRobot_Oxygen import DFRobot_Oxygen_IIC
+                from DFRobot_Oxygen import \
+                    DFRobot_Oxygen_IIC  # type: ignore[import-not-found]
 
                 self.device = DFRobot_Oxygen_IIC(self.iic_mode, self.i2c_address)
                 self.initialized = True
@@ -41,6 +44,7 @@ class ME2Driver(BaseDriver):
             raise SensorInitError(self.sensor_id, str(e)) from e
 
     def read(self) -> list[Reading]:
+        """Read the ME2 oxygen sensor"""
         if not self.initialized:
             raise SensorReadError(self.sensor_id, "Sensor not initialized")
         try:

@@ -1,7 +1,7 @@
 from src.SCD30Driver import SCD30Driver
 from src.bmp388_driver import BMP388Driver
 from src.STEMMADriver import STEMMADriver
-from src.ME2Driver import ME2Driver
+from src.me2_driver import ME2Driver
 from src.INA260Driver import INA260Driver
 
 from src.fake_ina260 import FakeINA260

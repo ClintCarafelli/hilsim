@@ -25,6 +25,10 @@ def failure_config() -> dict:
 # ------------------------------------------------------------------------------
 # Test get_oxygen_data() method
 
+# Two branches: 
+#    - fail to return a value
+#    - successfully return a value
+
 
 def test_failure(failure_config: dict) -> None:
     """Test failed value production"""
@@ -46,6 +50,9 @@ def test_success(success_config: dict) -> None:
 # ------------------------------------------------------------------------------
 # Test check_collection_number() method:
 
+# Two branches: 
+#    - collection number is too low (raises ValueError)
+#    - collection number is fine (doe nothing)
 
 def test_check_collection_number_low(success_config: dict) -> None:
     """Test to make sure method raises ValueError"""

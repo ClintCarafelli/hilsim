@@ -20,7 +20,7 @@ class FakeINA260:
     def voltage(self) -> float | None:
         """Generate voltage value"""
         if self._get_same_random() < self.config["failure_rate"]:
-            raise ValueError("simulated failed reading")
+            raise Exception("simulated failed reading")
 
         ps_V = self.config["base_states"]["power_supply"]["voltage"]
         self.voltage_val = ps_V + self._create_noise("base", "power_supply")
@@ -30,7 +30,7 @@ class FakeINA260:
     def current(self) -> float:
         """Generate current value"""
         if self._get_same_random() < self.config["failure_rate"]:
-            raise ValueError("simulated failed reading")
+            raise Exception("simulated failed reading")
         if not self.controls_running:
             self.update_current()
         return self.current_val
@@ -39,7 +39,7 @@ class FakeINA260:
     def power(self) -> float | None:
         "Generate power value"
         if self._get_same_random() < self.config["failure_rate"]:
-            raise ValueError("simulated failed reading")
+            raise Exception("simulated failed reading")
         return self.current_val * self.voltage_val
 
     def update_current(self, status: dict | None = None) -> None:

@@ -44,6 +44,10 @@ def fake_sensor(base_config: dict) -> FakeINA260:
 # ---------------------------------------------------------------------------------------
 # test voltage() property
 
+# Two branches:
+#   - successful value generation
+#   - failed value generation based on failure rate
+
 
 def test_voltage_success(fake_sensor: FakeINA260) -> None:
     """Test the successful voltage reading branch"""
@@ -59,13 +63,19 @@ def test_voltage_failure(fake_sensor: FakeINA260) -> None:
     """Test the failed voltage reading branch"""
     fake_sensor.config["failure_rate"] = 1
     with patch.object(fake_sensor, "_get_same_random", return_value=0.5) as mock_gsr:
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             fake_sensor.voltage
         mock_gsr.assert_called_once_with()
 
 
 # ---------------------------------------------------------------------------------------
 # test current() property
+
+# Three branches:
+#   - successful value generation
+#       - if controls are running, return self.current
+#       - if controls are not running, call update_current to get updated current
+#   - failed value generation based on failure rate
 
 
 def test_current_success_controls(fake_sensor: FakeINA260) -> None:
@@ -94,13 +104,17 @@ def test_current_failure(fake_sensor: FakeINA260) -> None:
     """test a failed reading of the current property"""
     fake_sensor.config["failure_rate"] = 1
     with patch.object(fake_sensor, "_get_same_random", return_value=0.5) as mock_gsr:
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             fake_sensor.current
         mock_gsr.assert_called_once_with()
 
 
 # ---------------------------------------------------------------------------------------
 # test power() property
+
+# Two branches:
+#   - successful value generation
+#   - failed value generation based on failure rate
 
 
 def test_power_success(fake_sensor: FakeINA260) -> None:
@@ -115,13 +129,24 @@ def test_power_failure(fake_sensor: FakeINA260) -> None:
     """test a failed reading of the current property"""
     fake_sensor.config["failure_rate"] = 1
     with patch.object(fake_sensor, "_get_same_random", return_value=0.5) as mock_gsr:
-        with pytest.raises(ValueError):
+        with pytest.raises(Exception):
             fake_sensor.power
         mock_gsr.assert_called_once_with()
 
 
 # ---------------------------------------------------------------------------------------
 # test update_current() method
+
+# Four branches that rejoin at different stages:
+# Deal with hardware status:
+#   - if status arg is none, use self.status (saved last status input)
+#   - if status arg is not none, update self.status to status, use self.status from
+#     there on
+# Get current and random factor:
+#   - if state of hardware peice is on, get is current value and a noise value
+#   - if state of hardware is anything else, current and noise is zero,
+#     this reflects the bang-bang nature of the hardware used in the controls and
+#     the system in general.
 
 
 def test_update_current_no_status_input_off(
@@ -158,6 +183,8 @@ def test_update_current_status_input(
 # ---------------------------------------------------------------------------------------
 # test set_status() method
 
+# No branches, but must make sure it updates self.status to the arg status.
+
 
 def test_set_status(fake_sensor: FakeINA260, on_status: dict) -> None:
     """test set status method actually sets the status"""
@@ -165,8 +192,13 @@ def test_set_status(fake_sensor: FakeINA260, on_status: dict) -> None:
     assert fake_sensor.status == on_status
 
 
-# ------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Test _get_same_random() method
+
+# Returns same random every three calls, two main branches:
+#   - if counter % 3 is zero (divisible by three, create new random number and save it)
+#   - if counter is not dvisible by three, thna return the saved random number
+#   - note the counter should increment after every call to the method
 
 
 def test_get_same_random(fake_sensor: FakeINA260) -> None:
@@ -187,8 +219,13 @@ def test_get_same_random(fake_sensor: FakeINA260) -> None:
         assert fake_sensor.counter == 4
 
 
-# ------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------
 # Test _create_noise() method
+
+# Three branches:
+#    - category is base, returns noise value
+#    - category is hardware, returns noise value
+#    - category is neither base nor hardware, returns zero
 
 
 @pytest.mark.parametrize(
@@ -205,4 +242,4 @@ def test_create_noise(fake_sensor: FakeINA260, category: str, hw_object: str) ->
             assert result == 0.01
 
 
-# ------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------------------

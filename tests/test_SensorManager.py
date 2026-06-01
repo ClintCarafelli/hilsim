@@ -185,7 +185,7 @@ def test_initialize_all_success(sensor_manager):
 @pytest.fixture
 def exception_driver_initializations():
     mock_driver_1 = MagicMock()
-    mock_driver_1.initialize.side_effect = Exception("simulated failure")
+    mock_driver_1.initialize.side_effect = SensorInitError("sensor_1", "simulated failure")
     mock_driver_2 = MagicMock()
     mock_driver_2.initialize.return_value = None
     mock_sensors = {"sensor_1": mock_driver_1,
@@ -204,7 +204,7 @@ def test_initialize_all_fail_no_skip(sensor_manager,
 def test_initialize_all_fail_skip(sensor_manager, 
                                   exception_driver_initializations):
     sensor_manager.skip_failed_init = True
-    surviving_sensors = copy.deepcopy(exception_driver_initializations)
+    surviving_sensors = exception_driver_initializations.copy()
     sensor_manager.sensors = exception_driver_initializations
     assert sensor_manager.sensors != {}
     with patch("src.SensorManager.logger") as mock_logger: 

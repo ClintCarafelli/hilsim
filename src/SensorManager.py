@@ -13,11 +13,12 @@ class SensorManager:
             - reading sensors
     """
     def __init__(self, config_dict: dict, i2c_bus: any, fakesensors: dict, skip_failed_init: bool = False) -> None:
-        self.skip_failed_init                = skip_failed_init
-        self.config_dict                     = config_dict
+        self.skip_failed_init               = skip_failed_init
+        self.config_dict                    = config_dict
         self.sensors: dict[str, BaseDriver] = {}
-        self.i2c_bus                         = i2c_bus
+        self.i2c_bus                        = i2c_bus
         self.fakesensors                    = fakesensors
+        self.failed                         = []
         self._build_sensors()
 
     def _build_sensors(self) -> None: 
@@ -60,12 +61,12 @@ class SensorManager:
                 logger.info("Initializing %s (%s)...", sensor_id, sensor.description)
                 sensor.initialize()
                 logger.info("Successful initialized %s", sensor_id)
-            except Exception as e: 
+            except SensorInitError as e: 
                 if self.skip_failed_init:
                     logger.critical("%s failed initialization: %s", sensor_id, e)
                     failed.append(sensor_id)
                 else: 
-                    raise SensorInitError(f"{sensor_id}", f"failed initialization: {e}")
+                    raise
         for sensor_id in failed:
             del self.sensors[sensor_id]
 
@@ -98,7 +99,7 @@ class SensorManager:
         except Exception as e: 
             logger.critical("Initialization failed for %s, %s", sensor_id, e)
             if not self.skip_failed_init:
-                raise SensorInitError(f"{sensor_id}", f"failed initialization: {e}")
+                raise
 
     def read(self, sensor_id: str) -> list[Reading]:
         """ Reads just one sensor specified by its sensor_id"""

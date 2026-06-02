@@ -6,7 +6,7 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 from src.LoadTOML import LoadTOML
-from src.SensorManager import SensorManager
+from src.sensor_manager import SensorManager
 from src.sensor_tracker import SensorTracker
 from src.I2CBus import I2CBus
 from src.file_manager import HandleLogging

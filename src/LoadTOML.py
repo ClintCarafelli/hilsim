@@ -1,10 +1,9 @@
-def LoadTOML(path: str) -> dict:
+from pathlib import Path
+
+def LoadTOML(path: Path) -> dict:
     """ load TOML file into a dictonary """
     try:
-        try:
-            import tomllib         
-        except:
-            import tomli as tomllib
+        import tomllib         
     except ImportError:
         raise RuntimeError("No TOML parser found. On Python < 3.11" \
         " run: pip install tomli.")

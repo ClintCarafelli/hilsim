@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 from src.ina260 import INA260Driver
-from src.SensorExceptions import SensorInitError, SensorReadError
+from src.sensor_exceptions import SensorInitError, SensorReadError
 
 # ---------------------------------------------------------------------------------------
 # Setup

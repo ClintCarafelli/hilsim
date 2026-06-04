@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from src.base_driver import Reading
 from src.sensor_manager import SensorManager
-from src.SensorExceptions import ConfigError, SensorInitError, SensorReadError
+from src.sensor_exceptions import ConfigError, SensorInitError, SensorReadError
 
 
 # Note: some things in this file are repetitive. I have done this to avoid

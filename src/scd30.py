@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from random import random
 
 from src.base_driver import BaseDriver, Reading
-from src.SensorExceptions import SensorInitError, SensorReadError
+from src.sensor_exceptions import SensorInitError, SensorReadError
 
 # if sim=False, will import SCD30 from scd30_i2c
 

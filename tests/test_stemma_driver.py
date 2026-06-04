@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from src.SensorExceptions import SensorInitError, SensorReadError
+from src.sensor_exceptions import SensorInitError, SensorReadError
 from src.stemma import STEMMADriver
 
 # ------------------------------------------------------------------------------

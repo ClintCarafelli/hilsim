@@ -5,7 +5,7 @@ from typing import Any
 
 from src.base_driver import BaseDriver, Reading
 from src.registries import driver_registry
-from src.SensorExceptions import ConfigError, SensorInitError, SensorReadError
+from src.sensor_exceptions import ConfigError, SensorInitError, SensorReadError
 
 logger = logging.getLogger(__name__)
 

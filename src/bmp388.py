@@ -4,7 +4,7 @@ from typing import Any
 from random import random
 
 from src.base_driver import BaseDriver, Reading
-from src.SensorExceptions import SensorInitError, SensorReadError
+from src.sensor_exceptions import SensorInitError, SensorReadError
 
 # If sim=False: will import adafruit_bmp3xx
 

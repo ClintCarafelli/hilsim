@@ -1,4 +1,4 @@
-from src.DriverRegistry import fake_sensor_registry
+from src.registries import fake_sensor_registry
 
 class CreateFakeSensors:
     def __init__(self, config: dict) -> None: 

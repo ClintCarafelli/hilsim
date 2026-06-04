@@ -64,7 +64,7 @@ def test_send_failure(ac: AdvancedCommunication, secondary_send: bool) -> None:
         ac.device.read_and_write.assert_called_once_with("send_msg", "receive_msg")
         if secondary_send:
             assert (
-                "Connection was recovered with heartbeat, but failed on"
+                "connection was recovered with heartbeat, but failed on"
                 in log_msgs[1].args[0]
             )
         else:

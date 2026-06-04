@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import pytest
-from src.fake_scd30 import FakeSCD30
+from src.scd30 import FakeSCD30
 
 # ------------------------------------------------------------------------------
 # Setup
@@ -63,7 +63,7 @@ def test_set_measurement_interval(scd30: FakeSCD30) -> None:
 
 def test_start_periodic_measurement(scd30: FakeSCD30, patch_time: datetime) -> None:
     """Test the start_periodic_measurement is set"""
-    with patch("src.fake_scd30.datetime") as mock_dt:
+    with patch("src.scd30.datetime") as mock_dt:
         mock_dt.now.return_value = patch_time
         scd30.start_periodic_measurement()
         assert scd30.reading is True
@@ -91,7 +91,7 @@ def test_get_data_ready(scd30: FakeSCD30, patch_time: datetime, time_diff: int) 
     """Test get data ready over all three time elapsed cases"""
     scd30.measurement_interval = 2
     scd30.last_reading_time = patch_time
-    with patch("src.fake_scd30.datetime") as mock_dt:
+    with patch("src.scd30.datetime") as mock_dt:
         mock_dt.now.return_value = patch_time + timedelta(seconds=time_diff)
         result = scd30.get_data_ready()
         if time_diff == 1:
@@ -112,7 +112,7 @@ def test_get_data_ready(scd30: FakeSCD30, patch_time: datetime, time_diff: int) 
 
 def test_read_measurement_success(scd30: FakeSCD30) -> None:
     """Test a successful reading"""
-    with patch("src.fake_scd30.random", return_value=0.5):
+    with patch("src.scd30.random", return_value=0.5):
         result = scd30.read_measurement()
         assert len(result) == 3
         assert result[0] == 20000
@@ -137,13 +137,13 @@ def test_read_measurement_fail(scd30: FakeSCD30) -> None:
 
 def test_in_range(scd30: FakeSCD30) -> None:
     """Test that in_range generates expected values"""
-    with patch("src.fake_scd30.random", return_value=0.0):
+    with patch("src.scd30.random", return_value=0.0):
         result = scd30._in_range("CO2")
         assert result == 0.0
-    with patch("src.fake_scd30.random", return_value=0.5):
+    with patch("src.scd30.random", return_value=0.5):
         result = scd30._in_range("CO2")
         assert result == 20000.0
-    with patch("src.fake_scd30.random", return_value=1):
+    with patch("src.scd30.random", return_value=1):
         result = scd30._in_range("CO2")
         assert result == 40000.0
 

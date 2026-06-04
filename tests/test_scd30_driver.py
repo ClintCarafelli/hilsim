@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from src.scd30_driver import SCD30Driver
+from src.scd30 import SCD30Driver
 from src.SensorExceptions import SensorInitError, SensorReadError
 
 # ------------------------------------------------------------------------------

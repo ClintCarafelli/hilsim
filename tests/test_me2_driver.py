@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from src.me2_driver import ME2Driver
+from src.me2 import ME2Driver
 from src.SensorExceptions import SensorInitError, SensorReadError
 
 # ------------------------------------------------------------------------------

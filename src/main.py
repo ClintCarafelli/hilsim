@@ -5,12 +5,12 @@ import time
 from pathlib import Path
 from rich.console import Console
 from rich.table import Table
-from src.LoadTOML import LoadTOML
+from src.load_toml import LoadTOML
 from src.sensor_manager import SensorManager
 from src.sensor_tracker import SensorTracker
-from src.I2CBus import I2CBus
+from src.i2c_bus import I2CBus
 from src.file_manager import HandleLogging
-from src.CreateFakeSensors import CreateFakeSensors
+from src.create_fake_sensors import CreateFakeSensors
 
 def main_loop(sm: SensorManager, st: SensorTracker, t: Table, c: Console) -> None:
     """ Run the software in the mainloop"""

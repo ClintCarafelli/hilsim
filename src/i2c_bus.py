@@ -1,4 +1,4 @@
-from src.I2CExceptions import I2CInitError, I2CDeInitError
+from src.i2c_exceptions import I2CInitError, I2CDeInitError
 import logging
 
 logger = logging.getLogger(__name__)

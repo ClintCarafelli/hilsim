@@ -3,7 +3,7 @@
 from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
-from src.bmp388_driver import BMP388Driver
+from src.bmp388 import BMP388Driver
 from src.SensorExceptions import SensorInitError, SensorReadError
 
 # ------------------------------------------------------------------------------

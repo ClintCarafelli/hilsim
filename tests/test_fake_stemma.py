@@ -3,7 +3,7 @@
 from unittest.mock import patch
 
 import pytest
-from src.fake_stemma import FakeSTEMMA
+from src.stemma import FakeSTEMMA
 
 # ------------------------------------------------------------------------------
 # Setup
@@ -78,13 +78,13 @@ def test_temp_read_fail(fake_sensor: FakeSTEMMA) -> None:
 
 def test_in_range(fake_sensor):
     """Test the _in_rnage method (three cases)"""
-    with patch("src.fake_stemma.random", return_value=0.0):
+    with patch("src.stemma.random", return_value=0.0):
         result = fake_sensor._in_range("moisture")
         assert result == 200.0
-    with patch("src.fake_stemma.random", return_value=0.5):
+    with patch("src.stemma.random", return_value=0.5):
         result = fake_sensor._in_range("moisture")
         assert result == 1100.0
-    with patch("src.fake_stemma.random", return_value=1):
+    with patch("src.stemma.random", return_value=1):
         result = fake_sensor._in_range("moisture")
         assert result == 2000.0
 
@@ -97,7 +97,7 @@ def test_in_range(fake_sensor):
 
 def test_get_same_random(fake_sensor):
     """Test the get same random (self.random new value every two calls)"""
-    with patch("src.fake_stemma.random", return_value=0.1):
+    with patch("src.stemma.random", return_value=0.1):
         fake_sensor._get_same_random()
         assert fake_sensor.rand_num == 0
         assert fake_sensor.counter == 1

@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 import pytest
-from src.fake_ina260 import FakeINA260
+from src.ina260 import FakeINA260
 
 
 # ---------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ def test_set_status(fake_sensor: FakeINA260, on_status: dict) -> None:
 def test_get_same_random(fake_sensor: FakeINA260) -> None:
     """Test the get same random method: make sure it returns same number when
     called three times in a row, and a new number on the 4th"""
-    with patch("src.fake_ina260.random", side_effect=[0.1, 0.3]):
+    with patch("src.ina260.random", side_effect=[0.1, 0.3]):
         fake_sensor._get_same_random()
         assert fake_sensor.rand_num == 0.1
         assert fake_sensor.counter == 1
@@ -234,7 +234,7 @@ def test_get_same_random(fake_sensor: FakeINA260) -> None:
 )
 def test_create_noise(fake_sensor: FakeINA260, category: str, hw_object: str) -> None:
     """test the base category branch"""
-    with patch("src.fake_ina260.random", return_value=1):
+    with patch("src.ina260.random", return_value=1):
         result = fake_sensor._create_noise(category, hw_object)
         if category == "unknown":
             assert result == 0

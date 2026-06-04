@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 import pytest
-from src.fake_me2 import FakeME2
+from src.me2 import FakeME2
 
 
 # ------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ def test_success(success_config: dict) -> None:
     """Test successful value production"""
     me2 = FakeME2(success_config)
     se_list = [0.5] * 11
-    with patch("src.fake_me2.random", side_effect=se_list) as mock_random:
+    with patch("src.me2.random", side_effect=se_list) as mock_random:
         result = me2.get_oxygen_data(10)
         assert result == 12.5
         assert mock_random.call_count == 11

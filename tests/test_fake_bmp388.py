@@ -2,7 +2,7 @@
 from unittest.mock import patch
 
 import pytest
-from src.fake_bmp388 import FakeBMP388
+from src.bmp388 import FakeBMP388
 
 # ------------------------------------------------------------------------------
 # Setup
@@ -47,7 +47,7 @@ def fail_sensor(failure_config: dict) -> FakeBMP388:
 
 def test_get_same_random(success_sensor: FakeBMP388) -> None:
     """Ensure same random number is used for every 2 successive calls"""
-    with patch("src.fake_bmp388.random", return_value=0.1):
+    with patch("src.bmp388.random", return_value=0.1):
         success_sensor._get_same_random()
         assert success_sensor.rand_num == 0.5
         assert success_sensor.counter == 1
@@ -66,7 +66,7 @@ def test_get_same_random(success_sensor: FakeBMP388) -> None:
 
 def test_pressure_success(success_sensor: FakeBMP388) -> None:
     """Test a successful reading of the pressure property"""
-    with patch("src.fake_bmp388.random", return_value=0.5):
+    with patch("src.bmp388.random", return_value=0.5):
         assert success_sensor.pressure == 775
 
 
@@ -86,7 +86,7 @@ def test_pressure_fail(fail_sensor: FakeBMP388) -> None:
 
 def test_temperature_success(success_sensor: FakeBMP388) -> None:
     """Test a successful reading of the temperature property"""
-    with patch("src.fake_bmp388.random", return_value=0.5):
+    with patch("src.bmp388.random", return_value=0.5):
         assert success_sensor.temperature == 32.5
 
 

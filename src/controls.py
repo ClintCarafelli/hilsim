@@ -16,7 +16,7 @@ from rich import print
 from serial import SerialException
 
 from src.device_exceptions import DeviceConnectionError
-from src.LoadTOML import LoadTOML
+from src.load_toml import LoadTOML
 
 logger = logging.getLogger(__name__)
 

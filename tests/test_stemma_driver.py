@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from src.SensorExceptions import SensorInitError, SensorReadError
-from src.stemma_driver import STEMMADriver
+from src.stemma import STEMMADriver
 
 # ------------------------------------------------------------------------------
 # Setup

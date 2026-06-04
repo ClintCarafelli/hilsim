@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch, MagicMock, mock_open
-from src.LoadTOML import LoadTOML
+from src.load_toml import LoadTOML
 
 path = "/fake/path/to_TOML.TOML"
 config_data = {"name": "sensor", "num_measurements": 4}

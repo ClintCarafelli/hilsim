@@ -2,7 +2,7 @@
 
 import logging
 from typing import Any
-
+import pprint
 from src.base_driver import BaseDriver, Reading
 from src.registries import driver_registry
 from src.sensor_exceptions import ConfigError, SensorInitError, SensorReadError

@@ -12,3 +12,6 @@ class SensorReadError(SensorError):
 
 class ConfigError(SensorError):
     """Raised when the config file is missing, malformed, or incomplete."""
+
+class UnknownVariableName(SensorError):
+    """Raised when user inputs an unknown variable in a sensor file"""

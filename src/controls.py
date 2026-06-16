@@ -198,7 +198,7 @@ class AdvancedCommunication:
     def send(self, send_msg: str, receive_msg: str, secondary_send=False) -> bool:
         """Send the initial command and check for response"""
         logger.info(
-            "Will sending '%s' to %s, expecting '%s' in return for confirmation",
+            "Will send '%s' to %s, expecting '%s' in return for confirmation",
             send_msg,
             self.device_name,
             receive_msg,
@@ -321,21 +321,27 @@ class Controls:
     def __init__(self, device_dict: dict[str, AdvancedCommunication]) -> None:
         self.devices = device_dict
 
-    def heart_beat(self, device_id: str) -> dict[str, bool]:
+    def heart_beat(self, device_id: str, advanced_connection: bool =False) -> dict[str, bool] | bool:
         """send heart beat request to device"""
         logger.info("Sending heartbeat to %s", device_id)
+        confirmation: dict[str, bool] = {}
 
         correct_device = self.devices[device_id]
         send_msg = correct_device.hb_sm
         receive_msg = correct_device.hb_rm
-        confirmation = correct_device.advanced_connection(send_msg, receive_msg)
+
+        if advanced_connection: 
+            confirmation = correct_device.advanced_connection(send_msg, receive_msg)
+        else: 
+             confirmation["confirmed"] = correct_device.send(send_msg, receive_msg)
+
         return confirmation
 
     def gpio(
-        self, device_id: str, channel: int, side: int, time: int
+        self, device_id: str, pin: int, side: int, time: int
     ) -> dict[str, bool]:
         """Send GPIO message"""
-        msg = "GPIO, " + str(channel) + ", " + str(side) + ", " + str(time)
+        msg = "GPIO, " + str(pin) + ", " + str(side) + ", " + str(time)
         correct_device = self.devices[device_id]
         confirmation = correct_device.advanced_connection(msg, msg)
         return confirmation
@@ -382,6 +388,18 @@ class Controls:
         correct_device = self.devices[device_name]
         confirmation = correct_device.advanced_connection(msg, msg)
         return confirmation
+    
+    def advanced_send(self, device_name: str,  package: str) -> dict[str, bool] | bool:
+        """Send a message over serial using the advanced communication heirarchy / built in error recovery""" 
+        correct_device = self.devices[device_name]
+        confirmation = correct_device.advanced_connection(package, package)
+        return confirmation
+    
+    def send(self, device_name: str, package: str) -> bool: 
+         """Send a message over serial with a single send, no built-in error recovery"""
+         correct_device = self.devices[device_name]
+         confirmation = correct_device.send(package, package)
+         return confirmation 
 
 
 # ---------------------------------------------------------------------------------------
@@ -389,20 +407,22 @@ def build_peripherial_devices(dc: dict) -> dict:
     """Build peripherial devices and open serial connections to them"""
     device_configs = dc["devices"]
     advanced_comms_config = dc["advanced_communication"]
+    logger.info("building peripherial microcontrollers")
 
     device_dict = {}
     for device in dc["enabled_devices"]:
         sub_config = device_configs[device]
-        device_type = sub_config["device_type"]
         device_comms = SerialInterface(sub_config, device)
         device_w_advanced_comms = AdvancedCommunication(
             advanced_comms_config, device_comms
         )
         connected = device_w_advanced_comms.device.connect()
         if not connected:
+            logger.error("Error connecting to %s", device)
             raise DeviceConnectionError(
                 device, "Failed to connect to device. See message logs."
             )
+        logger.info("successfully connected to %s", device)
         device_dict[device] = device_w_advanced_comms
     return device_dict
 

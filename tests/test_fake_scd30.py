@@ -1,13 +1,14 @@
 """Test the fake SCD30"""
 
 from datetime import datetime, timedelta
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import pytest
 from src.scd30 import FakeSCD30
 
 # ------------------------------------------------------------------------------
 # Setup
+WORLD_STATE = MagicMock()
 READING_LIST = [
     {
         "name": "CO2",
@@ -39,7 +40,10 @@ def patch_time() -> datetime:
 @pytest.fixture
 def scd30() -> FakeSCD30:
     """Create an instance of the FakeSCD30"""
-    return FakeSCD30({"failure_rate": 0, "readings": READING_LIST})
+    return FakeSCD30(
+        {"failure_rate": 0, "readings": READING_LIST, "num_measurements": 3},
+        WORLD_STATE,
+    )
 
 
 # ------------------------------------------------------------------------------
@@ -105,47 +109,18 @@ def test_get_data_ready(scd30: FakeSCD30, patch_time: datetime, time_diff: int) 
 # ------------------------------------------------------------------------------
 # Test read_measurement() method
 
-# Two branches
-#    - successful reading (returns values)
-#    - failed reading (raises Exception)
+# No branches, errors are handled in the base class / other methods
 
 
-def test_read_measurement_success(scd30: FakeSCD30) -> None:
+def test_read_measurement(scd30: FakeSCD30) -> None:
     """Test a successful reading"""
-    with patch("src.scd30.random", return_value=0.5):
-        result = scd30.read_measurement()
-        assert len(result) == 3
-        assert result[0] == 20000
-        assert result[1] == 47.5
-        assert result[2] == 25
-        assert len(result) == 3
-
-
-# failure rate of 1 is always greater than random() which ensures failure
-def test_read_measurement_fail(scd30: FakeSCD30) -> None:
-    """Test a failed reading"""
-    scd30.failure_rate = 1
-    with pytest.raises(Exception):
-        scd30.read_measurement()
-
-
-# ------------------------------------------------------------------------------
-# def test _in_range() method
-
-# No branches, but check edges cases produced by random() and a middle case
-
-
-def test_in_range(scd30: FakeSCD30) -> None:
-    """Test that in_range generates expected values"""
-    with patch("src.scd30.random", return_value=0.0):
-        result = scd30._in_range("CO2")
-        assert result == 0.0
-    with patch("src.scd30.random", return_value=0.5):
-        result = scd30._in_range("CO2")
-        assert result == 20000.0
-    with patch("src.scd30.random", return_value=1):
-        result = scd30._in_range("CO2")
-        assert result == 40000.0
+    with (
+        patch.object(scd30, "add_failure_possibility") as afp,
+        patch.object(scd30, "get_return_value", side_effect=[223, 12, 201]) as grv,
+    ):
+        assert scd30.read_measurement() == [223, 12, 201]
+        afp.assert_called_once()
+        assert grv.call_count == 3
 
 
 # ------------------------------------------------------------------------------

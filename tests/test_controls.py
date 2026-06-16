@@ -34,14 +34,29 @@ def controls() -> Controls:
 # ---------------------------------------------------------------------------------------
 # Test heart_beat() method
 
+# Two branches: 
+#    - send with advanced connection
+#    - send without advanced connection
 
-def test_heart_beat(controls: Controls) -> None:
-    """Test the heart_beat() method"""
+def test_heart_beat_advanced_connection(controls: Controls) -> None:
+    """Test the heart_beat() method with advanced_connection"""
     mock_conn = cast(MagicMock, controls.devices["RP2040_1"].advanced_connection)
+    mock_conn.return_value = {"confirmed": True}
+    with patch("src.controls.logger") as mock_logger:
+        result = controls.heart_beat("RP2040_1", True)
+        print(result)
+        mock_conn.assert_called_once()
+        assert result["confirmed"] is True
+        mock_logger.info.assert_called_once()
+
+def test_heart_beat_send(controls: Controls) -> None:
+    """Test the heart_beat() method without advanced connection"""
+    mock_conn = cast(MagicMock, controls.devices["RP2040_1"].send)
+    mock_conn.return_value = True
     with patch("src.controls.logger") as mock_logger:
         result = controls.heart_beat("RP2040_1")
         mock_conn.assert_called_once()
-        assert result is True
+        assert result["confirmed"] is True
         mock_logger.info.assert_called_once()
 
 

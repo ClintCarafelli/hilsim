@@ -38,7 +38,6 @@ dead               = 8
 [sensors.STEMMA1]
 description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
 num_measurements        = 2
-sensor_num              = 1
 i2c_address             = "0x36"
 driver                  = "STEMMA1_driver"
 sim                     = "TRUE"
@@ -46,18 +45,20 @@ failure_rate            = 0.1
 sim_fail_initialization = false
 
 [[sensors.STEMMA1.readings]]
-name     = "moisture"
+name     = "soil_moisture"
 units    = "None"
 max      = 2000
 min      = 200
-accuracy = "None"
+noise    = 0.5
+drift    = 0.1
 
 [[sensors.STEMMA1.readings]]
-name     = "temp"
+name     = "stemma_chip_temp"
 units    = "C"
 max      = 85
 min      = -40
-accuracy = 2
+noise    = 0.5
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [sensors.STEMMA2]
@@ -71,23 +72,24 @@ failure_rate            = 0.1
 sim_fail_initialization = false
 
 [[sensors.STEMMA2.readings]]
-name     = "moisture"
+name     = "soil_moisture"
 units    = "None"
 max      = 2000
 min      = 200
-accuracy = "None"
+noise    = 0.1
+drift    = 0.1
 
 [[sensors.STEMMA2.readings]]
-name     = "temp"
+name     = "stemma_chip_temp"
 units    = "C"
-max      = -40
-min      = 85
-accuracy = 2
+max      = 85
+min      = -40
+noise    = 0.5
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [sensors.STEMMA3]
 description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
-sensor_num              = 1
 num_measurements        = 2
 i2c_address             = "0x38"
 driver                  = "STEMMA3_driver"
@@ -96,24 +98,25 @@ failure_rate            = 0.1
 sim_fail_initialization = false 
 
 [[sensors.STEMMA3.readings]]
-name     = "moisture"
+name     = "soil_moisture"
 units    = "None"
 max      = 2000
 min      = 200
-accuracy = "None"
+noise    = 0.1
+drift    = 0.1
 
 [[sensors.STEMMA3.readings]]
-name     = "temp"
+name     = "stemma_chip_temp"
 units    = "C"
-max      = -40
-min      = 85
-accuracy = 2
+max      = 85
+min      = -40
+noise    = 0.5
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # CO2 sensor configurations
 [sensors.SCD30]
 description = "Measures CO2 (ppm), relative humdity (%), and temperature (C)"
-sensor_num              = 1
 num_measurements        = 3
 driver                  = "SCD30_driver"
 sim                     = "True"
@@ -126,27 +129,30 @@ name     = "CO2"
 units    = "ppm"
 min      = 0
 max      = 40000
-accuracy = 30
+noise    = 0.1
+drift    = 0.1
 
 [[sensors.SCD30.readings]]
 name     = "relative_humidity"
 units    = "percent"
 min      = 0
 max      = 95
-accuracy = 3
+noise    = 0.1
+drift    = 0.1
 
 [[sensors.SCD30.readings]]
-name     = "temp"
+name     = "system_temp"
 units    = "C"
 min      = 0
 max      = 50
 accuracy = 0.4
+noise    = 0.1
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Pressure sensor configurations
 [sensors.BMP388]
 description             = "measures pressure (hpa) and air temp (C)"
-sensor_num              = 1
 num_measurements        = 2
 driver                  = "BMP388_driver"
 sim                     = "True"
@@ -154,24 +160,25 @@ failure_rate            = 0.1
 sim_fail_initialization = false
 
 [[sensors.BMP388.readings]]
-name     = "pressure"
+name     = "system_pressure"
 units    = "hpa"
 min      = 300
 max      = 1250
-accuracy = 0.50
+noise    = 0.1
+drift    = 0.1
 
 [[sensors.BMP388.readings]]
-name     = "air_temp"
+name     = "system_temp"
 units    = "C"
 min      = 0
 max      = 65
-accuracy = 0.50
+noise    = 0.1
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Oxygen Sensor configurations
 [sensors.ME2]
 description             = "measures oxygen (% of air mass)"
-sensor_num              = 1
 num_measurements        = 1
 collection_number       = 10
 IIC_mode                = 0x01
@@ -182,17 +189,17 @@ failure_rate            = 0.1
 sim_fail_initialization = false
 
 [[sensors.ME2.readings]]
-name     = "oxygen"
+name     = "O2"
 units    = "percent"
 min      = 0
 max      = 25
-accuracy = 3.15
+noise    = 0.1
+drift    = 0.1
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Power sensor configurations
 [sensors.INA260]
 description             = "measures voltage (V), current (mA), and power (mW) using a shunt resistor"
-sensor_num              = 1
 num_measurements        = 3
 driver                  = "INA260_driver" 
 sim                     = "True"
@@ -200,67 +207,28 @@ failure_rate            = 0.1
 sim_fail_initialization = false
 
 [[sensors.INA260.readings]]
-name     = "voltage"
+name     = "system_voltage"
 units    = "V"
 min      = 0
 max      = 40
-accuracy = 0.036
+noise    = 0.005
+drift    = 0.1
 
 [[sensors.INA260.readings]]
-name     = "current"
+name     = "system_current"
 units    = "mA"
 min      = 0
 max      = 15000
-accuracy = 22.5
+noise    = 0.1
+drift    = 0.5
 
 [[sensors.INA260.readings]]
-name     = "power"
+name     = "system_power"
 units    = "mW"
 min      = 0
 max      = 600000
-accuracy = 878.31 
-
-[sensors.INA260.base_states.power_supply]
-voltage  = 12.8
-noise    = 0.001
-
-[sensors.INA260.base_states.computer]
-current = 0.33
-noise   = 0.03
-
-[sensors.INA260.hardware_states.solenoid]
-on     = 1.06
-off    = 0
-noise  = 0.01
-
-[sensors.INA260.hardware_states.servo]
-on      = 0.588
-off     = 0
-noise   = 0.05
-
-[sensors.INA260.hardware_states.purple_lights]
-on      = 0.7
-off     = 0
-noise   = 0.001
-
-[sensors.INA260.hardware_states.white_lights]
-on      = 0.30
-off     = 0
-noise   = 0.15
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# Air Velocity configurations
-[sensors.FS3000]
-description             = "measures air velocity (meters per second)"
-sensor_num              = 1
-sensor_num_measurements = 1
-
-[sensors.FS3000.readings]
-name     = "air_velicty"
-units    = "mps"
-min      = 0
-max      = 7.83
-accuracy = 0.3615
+noise    = 0.0005
+drift    = 0.01
 
 #----------------------------------------------------------------
 #                            TIMING

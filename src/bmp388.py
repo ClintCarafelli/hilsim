@@ -3,66 +3,35 @@
 from typing import Any
 from random import random
 
-from src.base_driver import BaseDriver, Reading
+from src.base_driver import BaseDriver, Reading, SensorBase
 from src.sensor_exceptions import SensorInitError, SensorReadError
+from src.world_state import WorldState
+
 
 # If sim=False: will import adafruit_bmp3xx
 
 
-class FakeBMP388:
+class FakeBMP388(SensorBase):
     """Fake instance of a BMP388, contains the same methods"""
-
-    def __init__(self, config) -> None:
-        self.failure_rate = config["failure_rate"]
-        self.readings_meta_data = config["readings"]
-        self.counter = 0
-        self.rand_num = 0.5
 
     @property
     def pressure(self) -> float | None:
         """Read the pressure value"""
-        # query index for correct bounds for reading
-        i: int = next(
-            i
-            for i, meta in enumerate(self.readings_meta_data)
-            if meta["name"] == "pressure"
-        )
-        if self._get_same_random() < self.failure_rate:
-            raise RuntimeError("simulated failed reading")
-
-        val = self.readings_meta_data[i]["min"] + random() * (
-            self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"]
-        )
-        return val
+        self.add_failure_possibility()
+        return self.get_return_value("system_pressure", True)
 
     @property
     def temperature(self) -> float | None:
         """Read the temperature property"""
-        # query index for correct bounds for reading
-        i: int = next(
-            i
-            for i, meta in enumerate(self.readings_meta_data)
-            if meta["name"] == "air_temp"
-        )
-        if self._get_same_random() < self.failure_rate:
-            raise RuntimeError("simulated failed reading")
-
-        val = self.readings_meta_data[i]["min"] + random() * (
-            self.readings_meta_data[i]["max"] - self.readings_meta_data[i]["min"]
-        )
+        self.add_failure_possibility()
+        try:
+            val = self.get_return_value("system_temp", True)
+        except Exception as e: 
+            print(e)
+            val = None
         return val
-
-    # All parameters fail on the same reading (observed real behavior), so same random number
-    # should make all properties fail.
-    def _get_same_random(self) -> float:
-        """save a random number every 2 calls to dictate identical failure behavior across
-        both properties"""
-        self.counter += 1
-        if self.counter % 2 == 0:
-            self.rand_num = random()
-            return self.rand_num
-        return self.rand_num
-
+    #self.get_return_value("system_temperature", True)
+    
 
 class BMP388Driver(BaseDriver):
     """The Driver for the BMP388 Sensor, standardizes sensor to have two
@@ -70,14 +39,12 @@ class BMP388Driver(BaseDriver):
          - initialize()
          - read()
     """
-
     def __init__(
         self, sensor_id: str, config_dict: dict, i2c_bus: Any, fake_sensor: FakeBMP388
     ) -> None:
         super().__init__(sensor_id, config_dict, i2c_bus)
         self.sim = config_dict["sim"]
         self.sim_fail_initialization = config_dict["sim_fail_initialization"]
-        # self.device = None
         self.fake_sensor = fake_sensor
 
     def initialize(self) -> None:

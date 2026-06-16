@@ -1,0 +1,16 @@
+[co2_solenoid.settings]
+name          = "co2_solenoid"
+driver        = "CO2Solenoid"
+device        = "RP2040_1"
+pin           = 8
+sim           = true
+initial_state = "closed"
+states        = ["open", "closed"]
+
+[co2_solenoid.failure_sim]
+stuck_probability = 0.05
+cta_latency       = {distribution="normal", mean=20, std=5}
+
+[co2_solenoid.effects]
+"CO2"            = {effect_types = "s+t+p"}
+"system_current" = {effect_types = "s"}

@@ -1,5 +1,6 @@
 """Test the fake BMP388 sensor"""
-from unittest.mock import patch
+
+from unittest.mock import patch, MagicMock
 
 import pytest
 from src.bmp388 import FakeBMP388
@@ -10,12 +11,13 @@ READINGS_LIST = [
     {"name": "pressure", "units": "hpa", "min": 300, "max": 1250},
     {"name": "air_temp", "units": "C", "min": 0, "max": 65},
 ]
+WORLD_STATE = MagicMock()
 
 
 @pytest.fixture
 def success_config() -> dict:
     """Set up the basic config required"""
-    return {"readings": READINGS_LIST, "failure_rate": 0}
+    return {"readings": READINGS_LIST, "failure_rate": 0, "num_measurements": 2}
 
 
 # self.get_same_random is a surrogate for random() which is always less than 1,
@@ -23,77 +25,47 @@ def success_config() -> dict:
 @pytest.fixture
 def failure_config() -> dict:
     """Set up a config that gurantees failure paths"""
-    return {"readings": READINGS_LIST, "failure_rate": 1}
+    return {"readings": READINGS_LIST, "failure_rate": 1, "num_measurements": 2}
 
 
 @pytest.fixture
 def success_sensor(success_config: dict) -> FakeBMP388:
     """Create a sensor that successfully returns values"""
-    return FakeBMP388(success_config)
-
-
-@pytest.fixture
-def fail_sensor(failure_config: dict) -> FakeBMP388:
-    """Create a sensor that always fails"""
-    return FakeBMP388(failure_config)
-
-
-# ------------------------------------------------------------------------------
-# Test _get_same_random() method
-
-# Logic does not branch, but success_sensor.random should change every
-# two readings
-
-
-def test_get_same_random(success_sensor: FakeBMP388) -> None:
-    """Ensure same random number is used for every 2 successive calls"""
-    with patch("src.bmp388.random", return_value=0.1):
-        success_sensor._get_same_random()
-        assert success_sensor.rand_num == 0.5
-        assert success_sensor.counter == 1
-        success_sensor._get_same_random()
-        assert success_sensor.rand_num == 0.1
-        assert success_sensor.counter == 2
+    return FakeBMP388(success_config, WORLD_STATE)
 
 
 # ------------------------------------------------------------------------------
 # Test pressure property
 
-# Two main branches:
-#    - successful reading of the pressure property
-#    - failed reading of the pressure property
+# No branches, failures are handled in base class SensorBase
 
 
-def test_pressure_success(success_sensor: FakeBMP388) -> None:
+def test_pressure(success_sensor: FakeBMP388) -> None:
     """Test a successful reading of the pressure property"""
-    with patch("src.bmp388.random", return_value=0.5):
-        assert success_sensor.pressure == 775
-
-
-def test_pressure_fail(fail_sensor: FakeBMP388) -> None:
-    """Test a failed reading of the pressure property"""
-    with pytest.raises(Exception):
-        fail_sensor.pressure
+    with (
+        patch.object(success_sensor, "add_failure_possibility") as afp,
+        patch.object(success_sensor, "get_return_value", return_value=223) as grv,
+    ):
+        assert success_sensor.pressure == 223
+        afp.assert_called_once()
+        grv.assert_called_once()
 
 
 # ------------------------------------------------------------------------------
 # Test temperature property
 
-# Two main branches:
-#    - successful reading of the temperature property
-#    - failed reading of the temperature property
+# No branches, failures are handled in base class SensorBase
 
 
-def test_temperature_success(success_sensor: FakeBMP388) -> None:
+def test_temperature(success_sensor: FakeBMP388) -> None:
     """Test a successful reading of the temperature property"""
-    with patch("src.bmp388.random", return_value=0.5):
-        assert success_sensor.temperature == 32.5
-
-
-def test_temperature_fail(fail_sensor: FakeBMP388) -> None:
-    """Test a failed reading of the temperature property"""
-    with pytest.raises(Exception):
-        fail_sensor.temperature
+    with (
+        patch.object(success_sensor, "add_failure_possibility") as afp,
+        patch.object(success_sensor, "get_return_value", return_value=223) as grv,
+    ):
+        assert success_sensor.temperature == 223
+        afp.assert_called_once()
+        grv.assert_called_once()
 
 
 # ------------------------------------------------------------------------------

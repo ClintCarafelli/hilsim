@@ -11,7 +11,7 @@ power_cycles      = 3
 [devices.RP2040_1]
 sim               = "False"
 super_sim         = "True"
-super_sim_fr      = 1
+super_sim_fr      = 0
 baud_rate         = 115200
 device_ID         = ""
 fake_device_ID    = ""
@@ -24,7 +24,7 @@ hb_receive_msg    = "pong"
 [devices.RP2040_2]
 sim               = "False"
 super_sim         = "True"
-super_sim_fr      = 1
+super_sim_fr      = 0
 baud_rate         = 115200
 device_ID         = ""
 fake_device_ID    = ""

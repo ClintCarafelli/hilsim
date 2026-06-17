@@ -12,12 +12,12 @@ from src.sensor_manager import SensorManager
 from src.sensor_tracker import SensorTracker
 from src.i2c_bus import I2CBus
 from src.actuators import build_actuators
-from src.file_manager import HandleLogging
+from src.file_manager import HandleLogging, HandleData
 from src.create_fake_sensors import CreateFakeSensors
 from src.controls import Controls, build_peripherial_devices
 from src.co2_solenoid import CO2Solenoid
 
-def main_loop(sm: SensorManager, st: SensorTracker, t: Table, c: Console, controls: Controls, actuators: dict) -> None:
+def main_loop(sm: SensorManager, st: SensorTracker, t: Table, c: Console, controls: Controls, actuators: dict, data_handler: HandleData) -> None:
     """ Run the software in the mainloop"""
 
     start_time = time.time()
@@ -50,7 +50,7 @@ def main_loop(sm: SensorManager, st: SensorTracker, t: Table, c: Console, contro
             else:
                 print("NO DATA")
         data_row.append(str(round(time.time(), 2)))
-
+        data_handler.add_data_to_file(data_row)
         t.add_row(*data_row)
         c.print(t)
         st.track(data)
@@ -142,6 +142,17 @@ if __name__ == "__main__":
         table.add_column(header)
 
 #------------------------------------------------------------------------------
+# Set DataHandler: 
+    data_config_path = Path(__file__).parent.parent / "data_config.toml"
+    data_config = LoadTOML(data_config_path)
+    data_output_dir = Path(data_config["data_params"]["output_dir"])
+
+    if not data_output_dir.is_absolute():
+        data_output_dir = data_config_path.parent / data_output_dir
+
+    data_handler = HandleData(data_output_dir, header_list)
+
+#------------------------------------------------------------------------------
 # Call the main loop
     while True:
         main_loop(sensor_manager, 
@@ -149,5 +160,6 @@ if __name__ == "__main__":
                   table, 
                   console, 
                   controller, 
-                  actuators)
+                  actuators,
+                  data_handler)
 #------------------------------------------------------------------------------

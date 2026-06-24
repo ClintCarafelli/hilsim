@@ -33,7 +33,7 @@ A simple run command then simulates the entire system. Switching the "sim" keywo
 Currently, the "supported" i2c_bus wraps the board and busio libraries, allowing hilsim to accommodate a wide range of readily-available/cheap sensors from manufacturers like Adafruit. A future release will include support for the smbus library, allowing the the use of custom sensors / i2c devices at a lower level. 
 
 ## Roadmap
-- add detailed examples and walkthroughs. 
+- Add detailed examples and walkthroughs. 
 - Support for the smbus library.
 - Rapid power cycling / software cycling integration. The current release flags errors that the developer can accommodate in main, but does not have the capability to rapidly integrate software cycling or power cycling. 
 - SPI support

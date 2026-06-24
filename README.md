@@ -13,7 +13,7 @@ hilsim generates a project structure where the developer has four main tasks:
    1) fill out configuration files
    2) Writes basic drivers for sensors based on a template. 
    3) Describe the physics/behavior of actuators (anything that changes the state of the world), also based on a template.
-   4) Write the main logic/n
+   4) Write the main logic.
 
 A simple run command then simulates the entire system. Switching the "sim" keyword for either a sensor, device, or actuator allows the user to rapidly switch between simulating a component and deploying the actual hardware. No need to worry about any middleware or fatal exceptions in the background.
 
@@ -36,4 +36,4 @@ Currently, the "supported" i2c_bus wraps the board and busio libraries, allowing
 - Support for the smbus library.
 - Rapid power cycling / software cycling integration. The current release flags errors that the developer can accommodate in main, but does not have the capability to power cycle devices. 
 - SPI support
-- Virtual serial ports with socat, ideal for testing microcontroller C code alongside the host.  
+- Virtual serial ports with socat, ideal for testing microcontroller code alongside the host.  

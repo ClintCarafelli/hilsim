@@ -1,3 +1,0 @@
-STEMMA1,STEMMA1,STEMMA2,STEMMA2,STEMMA3,STEMMA3,SCD30,SCD30,SCD30,BMP388,BMP388,ME2,INA260,INA260,INA260,system_clock
-soil_moisture_1 (None),stemma_chip_temp_1 (C),soil_moisture_2 (None),stemma_chip_temp_2 (C),soil_moisture_3 (None),stemma_chip_temp_3 (C),CO2 (ppm),relative_humidity (percent),system_temp (C),system_pressure (hpa),system_temp (C),O2 (percent),system_voltage (V),system_current (mA),system_power (mW),time (UNIX)
-299.91329892078636,19.760892827307263,399.9161571396593,25.483336406535848,500.09439296904173,30.403613618545023,400.0593325196759,39.94978962980673,24.900489993153972,,,,12.796439587467344,1000.0852639772311,12797.530662800968,1782277076.7083032

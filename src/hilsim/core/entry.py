@@ -69,12 +69,10 @@ def build_table(sensor_manager: SensorManager) -> tuple[Table, list, list]:
     """Build the rich display table and return"""
     # Set up rich output for terminal data table
     sample_data, _ = sensor_manager.read_all()
-    print(sample_data)
     headers = sensor_manager.build_header(sample_data)
     top_header = headers[0]
     bottom_header = headers[1]
 
-    #console = Console()
     table = Table(
         title="Sensor Readings",
         show_header=False,
@@ -118,7 +116,7 @@ def run(root: Path) -> None:
         sensor_drivers,
     )
 
-    table, top_header, bottom_header = build_table(sensor_manager)
+    rich_table, top_header, bottom_header = build_table(sensor_manager)
     data_manager = DataManager(Path("data"), [top_header, bottom_header])
 
     ctx = {
@@ -128,6 +126,8 @@ def run(root: Path) -> None:
         "world_state": build_ctx["world_state"],
         "data_manager": data_manager,
         "log_manager": log_manager,
+        "table": rich_table,
+        "console": Console()
     }
 
     bdt = threading.Thread(

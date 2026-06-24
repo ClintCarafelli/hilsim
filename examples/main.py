@@ -6,6 +6,16 @@ from rich.console import Console
 from rich.table import Table
 
 
+def convert_to_str_iterable(data: dict, time_val: float) -> list: 
+    """convert nested dictonaries of data for printing to rich table"""
+    data_row = []
+    for measurements in data.values(): 
+        for variable in measurements.values(): 
+            data_row.append(str(variable.value))
+    data_row.append(str(time_val))
+    return data_row
+
+
 def main(ctx): 
 
     sensor_manager = ctx["sensor_manager"]
@@ -14,19 +24,9 @@ def main(ctx):
     world_state    = ctx["world_state"]
     data_manager   = ctx["data_manager"]
     log_manager    = ctx["log_manager"]
+    rich_table     = ctx["table"]
+    console        = ctx["console"]
 
-    sample_data, _ = sensor_manager.read_all()
-    headers = sensor_manager.build_header(sample_data)
-    top_header = headers[0]
-    top_header.append("system clock")
-    bottom_header = headers[1]
-    bottom_header.append("time (UNIX)")
-
-    console = Console()
-    table = Table(title="Sensor Readings", show_header=False,)
-    table.add_row(*top_header)
-    table.add_row(*bottom_header)
-    table.add_section()
 
     opened = False
     closed = True
@@ -40,13 +40,12 @@ def main(ctx):
         now = time.time()
         data, time_val = sensor_manager.read_all()
 
-
         data_manager.add_data_to_file(data, time_val)
-        #table.add_row(*data_row)
-        #console.print(table)
+        rich_table.add_row(*convert_to_str_iterable(data, time_val))
+        console.print(rich_table)
         sensor_tracker.track(data)
 
-        if now - start_time > 1 and not opened and not injection_complete:
+        if now - start_time > 2 and not opened and not injection_complete:
             co2_solenoid.send_command("open")
             opened = True
             closed = False
@@ -57,5 +56,4 @@ def main(ctx):
             opened = False
             injection_complete = True
 
-
-        time.sleep(0.5)
+        time.sleep(0.25)

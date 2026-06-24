@@ -12,7 +12,6 @@ from pathlib import Path
 from random import random
 
 import serial
-from rich import print
 from serial import SerialException
 
 from hilsim.core.device_exceptions import DeviceConnectionError
@@ -118,7 +117,6 @@ class SerialInterface(CommunicationInterface):
                 device_id = self.device_id
 
             try:
-                print("RUNNING SERIAL")
                 self.ser = serial.Serial(
                     port=device_id, baudrate=self.baud_rate, timeout=self.time_out
                 )

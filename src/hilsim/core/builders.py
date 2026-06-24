@@ -95,7 +95,6 @@ class BuildComponents:
                 sub_config, advanced_comms_config, device_comms
             )
             connected = device_w_advanced_comms.device.connect()
-            print(connected)
             if not connected:
                 logger.error("Error connecting to %s", device)
                 raise DeviceConnectionError(

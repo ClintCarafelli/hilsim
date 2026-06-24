@@ -51,8 +51,6 @@ class SensorManager:
 
         results: dict[str, dict[str, Reading]] = {}
         for sensor_id, sensor in self.sensors.items():
-            print(sensor_id)
-            print(sensor)
             if not sensor.initialized:
                 logger.warning("Skipping %s : not initialized", sensor_id)
                 results[sensor_id] = self._build_None_reading(sensor_id)
@@ -60,7 +58,6 @@ class SensorManager:
             try:
                 logger.info("Reading %s...", sensor_id)
                 results[sensor_id] = sensor.read()
-                print(results)
             except SensorReadError as e:
                 logger.error("Sensor reading failed for %s, %s", sensor_id, e)
                 results[sensor_id] = self._build_None_reading(sensor_id)

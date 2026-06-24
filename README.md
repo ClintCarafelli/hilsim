@@ -13,7 +13,7 @@ hilsim generates a project structure where the developer has four main tasks:
    1) fill out configuration files
    2) Writes basic drivers for sensors based on a template. 
    3) Describe the physics/behavior of actuators (anything that changes the state of the world), also based on a template.
-   4) Write the main logic
+   4) Write the main logic/n
 
 A simple run command then simulates the entire system. Switching the "sim" keyword for either a sensor, device, or actuator allows the user to rapidly switch between simulating a component and deploying the actual hardware. No need to worry about any middleware or fatal exceptions in the background.
 

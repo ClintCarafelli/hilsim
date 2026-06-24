@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hilsim"
+version = "0.1.0"
+description = "A Hardware-in-the-Loop / Software-in-the-Loop simulation framework"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "Clint Carafelli"}
+]
+dependencies = [
+    "click",
+    "jinja2",
+    "tomllib; python_version < '3.11'",
+    "pyserial",
+]
+
+[project.scripts]
+hilsim = "hilsim.cli.commands:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"hilsim" = ["scaffold/templates/**/*"]

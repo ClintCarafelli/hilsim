@@ -1,0 +1,60 @@
+from hilsim.core.actuators import ActuatorBase
+from hilsim.core.world_state import WorldState
+from hilsim.core.controls import Controls
+
+class ActuatorTemplate(ActuatorBase):
+    """Actuator Template"""
+    # Template for actuators (things that effect the system state)
+
+    # No need to call __init__, ActuatorBase already does. If you need to
+    # add your own attributes, use: 
+    # def __init__(self, 
+    #             actuator_config: dict, 
+    #             world_state: WorldState, 
+    #             controller: Controls) -> None
+    #     super().__init__(actuator_config, 
+    #                      world_state,
+    #                      controller)
+    #
+    # IMPORTANT ATTRIBUTES:
+    #   - self.dt: the change in time since the "effect_" methods were
+    #     last called in the background dynamics thread. 
+    #   - self.cst: time elapsed during the acutators current state
+    #     in seconds
+    #   - self.time: the time of the world state since start of the program, 
+    #     in seconds, so if program started running 5 seconds ago, 
+    #     self.time = 5
+    #   - self.hardware_state: the actual state of the hardware
+    #   - self.settings: the settings dictonary for the actuator
+    #
+    # IMPORTANT METHODS: 
+    #   - Developer shouldn't need to call any methods from the base class
+    #     here
+    #
+    # NOTES: 
+    #   -  all methods that describe effects of the actuator on the 
+    #      system state MUST be prefixed with "effect_" and then followed
+    #      by the world_state variable name they effect as written in 
+    #      world_state.toml, so if this actuator effects temperature, then 
+    #      the method that describes the actuators effect on temperature
+    #      must be called: effect_temperature()
+
+    # REQUIRED - EVEN IF ONLY SIMULATING
+    def build_command(self, target_state: str) -> str:
+        """Create command to be sent to the microcontroller"""
+        # Add code here to create a package (str) that a microcontroller
+        # can interpret and return it: 
+        raise NotImplementedError("delete this line and input your code!")
+        package = "write code to make your package!"
+        return package
+    
+    # NOT NECCESSARY, CAN DELETE IF NOT NEEDED
+    def effect_1(self) -> float: 
+        """sample effect method 1"""
+        # Add code here to describe how 
+        return 0 
+    
+    # NOT NECCESSARY, CAN DELETE IF NOT NEEDED
+    def effect_2(self) -> float: 
+        """sample effect method 2"""
+        return 0 

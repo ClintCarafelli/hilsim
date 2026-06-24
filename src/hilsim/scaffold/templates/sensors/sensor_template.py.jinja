@@ -1,0 +1,157 @@
+"""Sensor Driver Template"""
+from typing import Any
+
+from src.base_driver import DriverBase, SensorBase
+from src.world_state import WorldState
+
+# Do not put sensor-specific imports here, put them in the initialize_real() method
+# so code can run on a computer that does not support those imports (in sim mode)
+
+
+class DriverTemplate(DriverBase):
+    """Template for a sensor driver"""
+
+    # Change the class name of "DriverTemplate" to your driver
+    #
+    # No need to call __init__, already handled by DriverBase,
+    # if needing to add attributes, then use:
+    # def __init__(self,
+    #              sensor_id: str,
+    #              config_dict: dict,
+    #              i2c_bus: Any,
+    #              fake_sensor: SensorBase) -> None
+    #      super().__init__(sensor_id,
+    #                    config_dict,
+    #                    i2c_bus,
+    #                    fake_sensor)
+    #
+    #
+    # IMPORTANT ATTRIBUTES
+    #   - self.device: an instance of the actual sensor or a fake sensor
+    #   - self.i2c_bus: the i2c bus instance
+    #
+    # IMPORTANT METHODS: 
+    #   - get_correct_variable_name(). This method is designed to deal with
+    #     the common case were the developer has multiple identical sensors
+    #     that fundamentally read the same thing but manifest as different 
+    #     state variables. For example, consider having three identical 
+    #     soil moisture sensors. All of them use the same driver, but they
+    #     are not reading the same state variable because they are reading 
+    #     soil moisture content with varies with location. To solve this 
+    #     problem, you can query the correct variable name using this method. 
+    #     It works off the assumption that the variables have a common prefix, 
+    #     something like soil_moisture_1, soil_moisture_2, etc. During 
+    #     construction you call call 
+    #     self.soil_moisture_name = self.get_correct_variable_name("soil_moisture")
+    #     to query the correct variable name for that particular sensor. 
+    #
+    # Fill in code for the three methods below. All three are required, otherwise
+    # the sensor will not be read properly.
+
+    def initialize_sim(self) -> None:
+        """intialize sim mode"""
+        self.device = self.fake_sensor
+        raise NotImplementedError("delete this line and input your code!")
+        # add any addition sim initialization here
+
+    def initialize_real(self) -> None:
+        """initialize a real sensor"""
+        raise NotImplementedError("delete this line and input your code!")
+        # add imports / code here to initialize real hardware
+
+    def form_vals_dict(self) -> dict[str, float]:
+        """Create dictonary of sensor readings"""
+        raise NotImplementedError("delete this line and input your code!")
+        # Add code to:
+        #   1) read sensor
+        #   2) form a dictonary whose keys are state variables
+        #      (i.e. defined in world_state.toml) and the values
+        #       are floats from 1)
+        return {} # return dictonary from 2)
+    
+
+class FakeSensorTemplate(SensorBase): 
+    """Template for fake sensor"""
+    # Change class name "FakeSensorTemplate" to your fake sensor name
+    #
+    # No need to call __init__, already handled by DriverBase,
+    # if needing to add attributes, then use:
+
+    # def __init__(self, config: dict, world_state: WorldState) -> None
+    #     super().__init__(config, world_state)
+    #
+    # IMPORTANT ATTRIBUTES:
+    #   - self.time: the current time since start of running program of the 
+    #     world state, in seconds, so if program started running 5 seconds ago, 
+    #     self.time = 5
+    #   - self.world_state: the instance of the world_state class, which has 
+    #     methods to get certain variables 
+    #
+    # IMPORTANT METHODS:
+    #   - self.add_failure_possibility(). 
+    #       - Call this method inside one of the fake sensors method too add the 
+    #         possiblity of a failed sensor reading. This is done by raising a 
+    #         RuntimeError. The Sensor Manager catches this, but it is useful if 
+    #         your actual sensors fail occasionally, then this will mimic that 
+    #         same behavior. One note: on cheap i2c sensors, all readings on a 
+    #         particular sensor tend to fail together, meaning if a sensor reads
+    #         three things, they all fail. the self.add_failure_possiblity() mimics
+    #         this behavior by using the same random number for failure evaluation
+    #         over n calls to other methods where this method is called. For example: 
+    #            - you have a sensor that reads two things: pressure and temperature
+    #            - the fake sensor has two properties to get these values: 
+    #            @property
+    #             def get_pressure()
+    #                   self.add_failure_possiblity()
+    #                   ...
+    #             @property
+    #             def get_temperature()
+    #                   self.add_failure_possiblity()
+    #                   ...
+    #              Then, when the driver calls get_pressure() and get_temperature()
+    #              together in the driver, the same random number is used to determine
+    #              if the reading is a success or failure, and hence they either 
+    #              both fail or both succeed. This is slighty fragile, but generalizes
+    #              well to the prescribed fromat. 
+    #
+    #   - self.get_return_value(variable_name: str, add_noise_and_drift: bool=True)
+    #       - Call this method to have the sensor return a value from the world state. 
+    #       - variable_name: the name of the variable defined in world_state.toml 
+    #         to return
+    #       - add_noise_and_dirft: True if you want to add noise and drift to the 
+    #         reading, False if you don't
+    #   - get_correct_variable_name(). This method is designed to deal with
+    #     the common case were the developer has multiple identical sensors
+    #     that fundamentally read the same thing but manifest as different 
+    #     state variables. For example, consider having three identical 
+    #     soil moisture sensors. All of them use the same driver, but they
+    #     are not reading the same state variable because they are reading 
+    #     soil moisture content with varies with location. To solve this 
+    #     problem, you can query the correct variable name using this method. 
+    #     It works off the assumption that the variables have a common prefix, 
+    #     something like soil_moisture_1, soil_moisture_2, etc. During 
+    #     construction you call call 
+    #     self.soil_moisture_name = self.get_correct_variable_name("soil_moisture")
+    #     to query the correct variable name for that particular sensor. 
+    #          
+
+    # NOT NECCESSARY: CAN DELETE THIS METHOD
+    def method_1(self):
+        """possible method for set up, mimic actual sensor code"""
+        # Delete if not needed
+
+    # NOT NECCESSARY: CAN DELETE THIS METHOD
+    def method_2(self):
+        """possible method for set up, mimic actual sensor code"""
+        # Delete if not needed
+
+    # NOT NECCESSARY: CAN DELETE THIS METHOD
+    def show_sample_from_world_state(self): 
+        """show an example of getting a world state variable"""
+        # Suppose "temperature" is defined in the world state and this
+        # sensor reads it, and we want to incorporate noise and drift, then: 
+
+        # temp_val = self.get_return_value("temperature", True)
+
+
+

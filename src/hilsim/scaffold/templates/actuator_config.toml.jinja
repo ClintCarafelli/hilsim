@@ -1,0 +1,126 @@
+#--------------------------------------------------------------------------------
+# TEMPLATE FOR THE actuator_config.toml - {{project_name}}
+#
+# This .toml file describes the behavior of actuators. This file must be 
+# implimented, along with a class that describes their commands and physics, 
+# as described in the actuators_template.py
+#
+# Each actuator has three sections: settings, failure_sim, and effects, 
+# these reflect as nested dictonaries using the [actuator_name.settings]
+# semantics. Replace "actuator_name" with the actual name of the actuator. 
+# This name should match your entry in the name field in settings. 
+#
+# The rest of this header describes the required key-value pairs in this file. 
+# Missing key-value pairs are flagged by file evalators at runtime and will
+# raise an exception. 
+#
+# SETTINGS
+# The settings dictonary describes the fundamental hardware parameters
+# of the actuator
+#
+# settings key-value pairs: 
+#   - name: (string) the name of the actuator, should be the same as the 
+#     top-level key
+#   - driver: (string) the name of the class built from actuator_template.py 
+#     that describes both the actuators commands and physical effects on the 
+#     state of the system. 
+#   - device: (string) the name of the microcontroller that controls the 
+#     device. Should match a device described in device_config.toml. 
+#   - pin: (string) technically not neccessary, but often used in building 
+#     commands to be sent to the microcontroller. Would describe what pin 
+#     that controls the logic / state of the actuator
+#   - sim: (bool) describes if the actuator is being simulated or not. 
+#     true or false.
+#   - initial_state: (string) the known, initial state of the hardware. 
+#     Should match an element of the list states (the following key-value pair)
+#   - states: List(string): a list of strings that describe either the finite
+#     state space of the specific actuator, or a range of the real number line. 
+#     Note: it is possible to work around this field if neccessary. It serves
+#     more as documentation for the state space of your actuator more than 
+#     anything. Simply write code as needed in the associated actuator 
+#     template python file. 
+#
+# FAILURE_SIM
+# The failure_sim describes the failure / lag of the actuator. For example,
+# a solenoid or servo may get stuck in its current state. The latency describes
+# the time (in the form a distribution) between when the command is recieved
+# and confirmed and when the state change in the actuator is actually observed. 
+#
+# failure_sim key-value pairs: 
+#   - stuck_probability: (float) a number between 0.05 representing how often
+#     (in the form a decimal percentage) the actuator gets stuck in its current
+#     state. 
+#   - cta_latency: (dictonary). Describes the time between the when the command 
+#     is recieved and when the state change in the actuator is observed. Currently
+#     there are two options for this. Anything else will result in an error or 
+#    defaulting to 0 latency. Options: 
+#         - {distribution="normal", mean=a, std=b}, where a and b are
+#             MILLISECONDS
+#          - {distribution="uniform", min=a, max=b}, where a and b are
+#             MILLISECONDS
+#
+# EFFECTS
+# Most of the actual behavior of the effects of an actuator on the state of the 
+# system are implimented by you in the effects_ methods of the actuator_template. 
+# However, it is neccessary for the system to understand if the effects "linger", 
+# meaning that once the actuator changes state, the effects on the state remain. 
+# For example, a solenoid injecting allowing a fluid to enter a chamber will 
+# permanently alter the amount of fluid in the chamber, even after the solenoid has
+# closed. However, the current drawn by the solenoid is only present during
+# the "open" state and when turned closed, the system current immediately 
+# reflects the fact that the solenoid is no longer drawing current. This brings us
+# to the key value pairs for the effectes section.
+#
+# effects dictonary key-value pairs: 
+#    - key (str): the name of a world_state variable, should match one in the 
+#      world_state.toml 
+#    - value (dict): a key of "effect_types" with a value that is a string that 
+#      describes the effect of an actuator in the three variables, state (s), 
+#      time (t), and persistent (p). The latter being the most important as the
+#      dynamics engine will search this string for "p" to determine if the current
+#      effects are to persist in the state space. The other two, s and t, are for
+#      documentation and meant to enforce that the developer thinks about which
+#      of the three fronts the effect lives on. The three letters are joined with
+#      plus signs 
+
+#      Example: 
+#      Suppose we have a solenoid injecting a fluid. The world state has a
+#      variable called "fluid_height" that describes the depth of a fluid in a 
+#      chamber that the solenoid, when opened, feeds. The fluid flows in at some
+#      rate (hence depends on time), only when the solenoid is open (hence
+#      depends on actuator state), and when considered as a univariate problem, 
+#      the change in the fluid height caused by injecting fluid via the solenoid
+#      into the chamber will persist even after the state of the solenoid changes. 
+#      The proper entry would be: 
+
+#      "fluid_height" = {effect_types = "s+t+p"}
+
+#      Furthermore, we may consider the case where the world state has a 
+#      "current" variable. The current drawn by the solenoid is only dependent on 
+#      state, and is both constant with respect to the solenoid (albet at different
+#      values) when either open or closed. Hence, the current is neither time
+#      dependent or peristent, so the proper entry would be: 
+#
+#      "current" = {effect_types = "s"}
+#      
+# NOTE: All actuators are described in this toml file. Simply add the three fields
+# for each actuator. 
+
+#--------------------------------------------------------------------------------
+
+[actuator_name.settings]
+name = "actuator_name"
+driver = 
+device = 
+pin = 
+sim = 
+initial_state = "state_1"
+states = ["state_1", "state_2"]
+
+[actuator_name.failure_sim]
+stuck_probability = a
+cta_latency       = {distribution="normal", mean=c, std=d}
+
+[actuator_name.effects]
+system_variable_1 = {effect_types = "put effect types here!}
+system_variable_2 = {effect_types = "put effect types here!}

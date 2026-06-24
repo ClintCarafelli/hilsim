@@ -1,0 +1,122 @@
+#--------------------------------------------------------------------------------
+# TEMPLATE FOR THE sensor_config.toml - {{project_name}}
+#
+# The sensor_config.toml describes the sensor suite. It has three main sections: 
+#   - sensor_params
+#   - sensor_error_program
+#   - sensors
+#
+# sensor_params: 
+#  The sensor_params section describes which sensors are enabled, and if all 
+#  sensors are being ran in simulation mode. This key-value pair with key 
+#  "sim_all" when set to true will stop the code from initializing the i2c bus 
+#  which may not be present and extends the functionality of this code beyond 
+#  only running on the actual host device. This section has the following
+#  key-value pairs: 
+#   - enabled_sensors: (list[str]) a list of all of the names of the sensors
+#     that are enabled. The code will automatically initialize these sensors.
+#   - sim_all: (bool), if true, will not initialize a real i2c bus. This 
+#     parameter exists because it is possible to simulate some sensors while
+#     using actual hardware for others. 
+#
+# sensor_error_program: 
+#  The sensor_error_program section describes the automatic handling of errors
+#  on the sensor suite. When a failed reading occurs, the program can do nothing, 
+#  cycle the i2c bus in software, or power cycle the i2c bus if the supporting
+#  hardware exists (a way to toggle the power to the sensor suite). This section
+#  has the following key-value pairs: 
+#   - first_i2c_cycle: (int) the number of successive failed readings on a
+#     single sensor that will trigger a first instance of cycling the i2c bus
+#     in the software. 
+#   - second_i2c_cycle: (int) if a first i2c_cycle fails to revive a sensor, than
+#     a second i2c cycle in the software is possible. Note that this is successive
+#     readings from the first failed reading, not after the first i2c cycle. 
+#   - first_power_cycle: (int) If both i2c_cycles fail to revive a sensor, it is
+#     possible to power cycle the i2c bus if the supporting hardware exists (note 
+#     that on hosts such as the raspberry pi 4b, it is not possible to toggle the 
+#     power to the i2c bus without adding additonal hardware, and that is on the 
+#     assumption that it is gettings its power from the 3.3V or 5V pin on the 
+#     device.) 
+#   - second_power_cycle: (int) as with the i2c_cycle parameters, if a first power
+#     cycle fails to revive a sensor, than a second power cycle can be used. 
+#   - dead: (int): the number of failed successive readings that will declare a 
+#     sensor dead, so that future failed readings on the sensor do not trigger 
+#     i2c bus cycles in the software or power. 
+#
+# sensors: 
+#  The sensors section describes the actual sensors including their basic 
+#  parameters such as their number of measuremnents, the driver they use, and the 
+#  failure rate of the simulation mode among other things. This section also 
+#  describes the physical values they use. Each sensor is a nested dictonary, 
+#  with the format [sensors.sensor_name]. This sensor_name is the sensor_id, and is
+#  used in the enabled_sensors list, and can be used anywhere in code to call the 
+#  associated value. This section also describes the parameters a sensor reads. 
+#  this is done by creating an array of tables with the following syntax: 
+#  [[sensors.sensor_name.readings]], which creates a list of dictonaries where 
+#  each dictonary describes that reading of the sensor. This section is broken 
+#  up into two parts: the key-value pairs of the main nested diconary, and the
+#  key-value pairs of a reading
+#   - main sensor key-value pairs: 
+#       - description: (str) breif description of the sensors purpose. 
+#       - num_measurements: (int) the number of distinct values the sensor
+#         reads
+#       - driver_name: (str) the name of the driver that drives the sensor, (not
+#         the module, but the name of the actual class)
+#       - fake_sensor_name: (str) the name of the fake sensor class that acts as 
+#         the simulated sensor (the proxy for world_state values)
+#       - sim: (bool): true if simming and pulling value from world state, false
+#         if using real hardware
+#       - failure_rate: (0 <= float <= 1) the failure rate of the simulated 
+#         sensor, where 0 never fails and 1 always fails. (The sensor will raise
+#         an exception at read time which is then caught and returned as a None
+#         value for output)
+#       - sim_fail_initialization: (bool) a way to test failing to initialize a
+#         sensor. This is automatically caught and handled in the code. The sensor
+#         will either be removed from the code or an exception is raised, depending 
+#         on the "skip_failied_init" parameter. 
+#       - NOTE: it is possible to include more key-value pairs as the whole
+#         nested dicotnary is avaible to the user under self.config in the
+#         associated driver. However, only the key-value pairs listed above are
+#         enforced. Other common key-value pairs include the i2c_address, etc. 
+#   - readings_key_value_pairs
+#       - name: (str) the name of the variable. This should match the name of a 
+#         variable in the world_state.toml
+#       - units: (str) the units the sensor uses. 
+#       - min: (float) the minimum value the sensor can read
+#       - max: (float) the maximum value the sensor can read
+#       - noise: (float) the noise in the sensor reading in the units listed
+#         above
+#       - drift :(float) the drift in the sensor per second.
+#--------------------------------------------------------------------------------
+
+[sensor_params]
+enabled_sensors = []
+sim_all         = "True"
+
+[sensor_error_program]
+first_i2c_cycle    = 4 
+second_i2c_cycle   = 5 
+first_power_cycle  = 6 
+second_power_cycle = 7 
+dead               = 8
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+#                                    SENSORS
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+[sensors.sensor_1]
+description             = "brief description of this sensor"
+num_measurements        =  1
+driver_name             = "MyDriver"
+fake_sensor_name        = "MyFakeSensor"
+sim                     = "TRUE"
+failure_rate            = 0.0
+sim_fail_initialization = false
+
+[[sensors.sensor_1.readings]]
+name     = "variable_name"
+units    = "units"
+max      = 0.0
+min      = 0.0
+noise    = 0.0
+drift    = 0.0
+

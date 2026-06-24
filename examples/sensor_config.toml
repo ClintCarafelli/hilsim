@@ -1,0 +1,218 @@
+[sensor_params]
+# enabled sensored contains the sensor_ids
+enabled_sensors = ["STEMMA1", "STEMMA2", "STEMMA3","SCD30", "BMP388", "ME2", "INA260"]
+sim_all         = true
+
+# Number describes how many subsequent erroneous readings are needed
+# to trigger the recovery method
+[sensor_error_program]
+first_i2c_cycle    = 4 
+second_i2c_cycle   = 5 
+first_power_cycle  = 6 
+second_power_cycle = 7 
+dead               = 8
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Soil sensor configurations
+[sensors.STEMMA1]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+driver_name             = "STEMMADriver"
+fake_sensor_name        = "FakeSTEMMA"
+num_measurements        = 2
+i2c_address             = "0x36"
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+[[sensors.STEMMA1.readings]]
+name     = "soil_moisture_1"
+units    = "None"
+max      = 2000
+min      = 200
+noise    = 0.5
+drift    = 0.1
+
+[[sensors.STEMMA1.readings]]
+name     = "stemma_chip_temp_1"
+units    = "C"
+max      = 85
+min      = -40
+noise    = 0.5
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[sensors.STEMMA2]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+driver_name             = "STEMMADriver"
+fake_sensor_name        = "FakeSTEMMA"
+num_measurements        = 2
+sensor_num              = 1
+i2c_address             = "0x37"
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+[[sensors.STEMMA2.readings]]
+name     = "soil_moisture_2"
+units    = "None"
+max      = 2000
+min      = 200
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.STEMMA2.readings]]
+name     = "stemma_chip_temp_2"
+units    = "C"
+max      = 85
+min      = -40
+noise    = 0.5
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[sensors.STEMMA3]
+description             = "Reads a unitless soil moisture value and chip temperature (not soil temp)"
+driver_name             = "STEMMADriver"
+fake_sensor_name        = "FakeSTEMMA"
+num_measurements        = 2
+i2c_address             = "0x38"
+driver                  = "STEMMA3_driver"
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false 
+
+[[sensors.STEMMA3.readings]]
+name     = "soil_moisture_3"
+units    = "None"
+max      = 2000
+min      = 200
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.STEMMA3.readings]]
+name     = "stemma_chip_temp_3"
+units    = "C"
+max      = 85
+min      = -40
+noise    = 0.5
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# CO2 sensor configurations
+[sensors.SCD30]
+description = "Measures CO2 (ppm), relative humdity (%), and temperature (C)"
+driver_name             = "SCD30Driver"
+fake_sensor_name        = "FakeSCD30"
+num_measurements        = 3
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+
+[[sensors.SCD30.readings]]
+name     = "CO2"
+units    = "ppm"
+min      = 0
+max      = 40000
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.SCD30.readings]]
+name     = "relative_humidity"
+units    = "percent"
+min      = 0
+max      = 95
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.SCD30.readings]]
+name     = "system_temp"
+units    = "C"
+min      = 0
+max      = 50
+accuracy = 0.4
+noise    = 0.1
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Pressure sensor configurations
+[sensors.BMP388]
+description             = "measures pressure (hpa) and air temp (C)"
+driver_name             = "BMP388Driver"
+fake_sensor_name        = "FakeBMP388"
+num_measurements        = 2
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+[[sensors.BMP388.readings]]
+name     = "system_pressure"
+units    = "hpa"
+min      = 300
+max      = 1250
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.BMP388.readings]]
+name     = "system_temp"
+units    = "C"
+min      = 0
+max      = 65
+noise    = 0.1
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Oxygen Sensor configurations
+[sensors.ME2]
+description             = "measures oxygen (% of air mass)"
+driver_name             = "ME2Driver"
+fake_sensor_name        = "FakeME2"
+num_measurements        = 1
+collection_number       = 10
+IIC_mode                = 0x01
+i2c_address             = 0x73
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+[[sensors.ME2.readings]]
+name     = "O2"
+units    = "percent"
+min      = 0
+max      = 25
+noise    = 0.1
+drift    = 0.1
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Power sensor configurations
+[sensors.INA260]
+description             = "measures voltage (V), current (mA), and power (mW) using a shunt resistor"
+driver_name             = "INA260Driver"
+fake_sensor_name        = "FakeINA260"
+num_measurements        = 3
+sim                     = true
+failure_rate            = 0.1
+sim_fail_initialization = false
+
+[[sensors.INA260.readings]]
+name     = "system_voltage"
+units    = "V"
+min      = 0
+max      = 40
+noise    = 0.005
+drift    = 0.1
+
+[[sensors.INA260.readings]]
+name     = "system_current"
+units    = "mA"
+min      = 0
+max      = 15000
+noise    = 0.1
+drift    = 0.5
+
+[[sensors.INA260.readings]]
+name     = "system_power"
+units    = "mW"
+min      = 0
+max      = 600000
+noise    = 0.0005
+drift    = 0.01

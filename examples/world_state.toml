@@ -1,0 +1,16 @@
+[variables]
+
+CO2                = {initial = 400.0, units = "ppm"}
+system_pressure    = {initial = 1013, units = "hPa"}
+relative_humidity  = {initial = 40.0, units = "percent"}
+O2                 = {initial = 19.5, units = "percent"} 
+soil_moisture_1    = {initial = 300.0, units = "unitless"}
+soil_moisture_2    = {initial = 400.0, units = "unitless"}
+soil_moisture_3    = {initial = 500.0, units = "unitless"}
+stemma_chip_temp_1 = {initial = 20, units = "C"}
+stemma_chip_temp_2 = {initial = 25, units = "C"}
+stemma_chip_temp_3 = {initial = 30, units = "C"}
+system_temp        = {initial = 25, units = "C"}
+system_voltage     = {initial = 12.8, units="V"}
+system_current     = {initial = 1000, units ="mA"}
+system_power       = {initial = 12800, units = "mW"}

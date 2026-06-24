@@ -1,0 +1,109 @@
+#--------------------------------------------------------------------------------
+# TEMPLATE FOR THE device_config.toml - {{project_name}}
+#
+# The device_config.toml describes the microcontrollers connected to the system
+# with USB (serial) connections. The controllers module uses the pyserial module
+# to communicate with the peripherial microcontrollers and/or any other device
+# that can be connected via usb and can utilize pyserial.
+#
+# The device_config.toml file consists of three main components: 
+#   - a list of enabled devices
+#   - advanced communication settings
+#   - device specific settings
+#
+# enabled_devices (list[str]): 
+#   This describes which devices on the configuration file are to be enabled. 
+#   These are automatically connected to at runtime. The field exists so that 
+#   the file can describe a number of devices, but does not neccessarily have
+#   to enable/connect to all of them. Note that each element in this list 
+#   should be identical to one of the nested dictonary names in the device
+#   section
+#
+# advanced_communcation: 
+#   This dictonary describes the settings for what may be done in the event
+#   that a message does not recieve a valid confirmation from the other device. 
+#   Note that notwithstanding heart-beat messages, all other 
+#   messages are to recieve that exact same method in response to act as
+#   confirmation for a successful send. This dictonary has three key-value
+#   pairs. 
+#   - retries: (int) this is the number of times the host will re-send the message
+#     when it does not receive a valid confirmation. Note that if a message is
+#     confirmed on the nth retry, the process exits successfully and continues
+#     to the next task.
+#   - connection_cycles: (int) If the maximum number of retries have been hit and 
+#     the host has not received a valid confirmation, than the host will cycle 
+#     the connection in software. Note that these methods are dependent on the 
+#     capabilities of the host and this is currently only supported for the
+#     Raspberry Pi 4b. Submit a pull request to help generalize functionality
+#     across other common host devices. Please include a script that can 
+#     software cycle a serial connection and be ran as a subprocess from python. 
+#   - power_cycles: (int) If the maximum number of connection cycles (software)
+#     cycles has been hit, then the connection will be power cycled. 
+#     #############################################################################
+#                                  !!! WARNING !!!
+#     This functionality is currently only supported on the Raspberry Pi 4b. 
+#     One of the hardware limitations of the 4b is that all four usb ports are 
+#     connected to the same power source, so it is impossible to cycle just one 
+#     connection, rather, anything connected to the USB ports WILL experience a 
+#     power cycle.
+#     #############################################################################
+#     To generalize this functionality to other common host devices, submit a pull
+#     request with a script that can power cycle a serial connection and be 
+#     ran as a subprocess from python.  
+#
+# devices specific settings. 
+
+# All device settings are held in nested dictonaries that follow the schema: 
+# [devices.device_name]. Note that it is the "device_name" that should be used in 
+# the enabled_devices list. 
+#
+# Each device has two levels of simulation that are possbile: 
+#   - sim: Use the socat library to open a virtual serial port, allowing the 
+#     user to test their actual device code along with the host code. (Currently 
+#     not supported, but will be soon.)
+#   - super sim: use a fake_serial module to simulate device read / writes. Never
+#     runs the actual device code. 
+#
+# Each device must have these key-value pairs in its settings: 
+#   - sim: (bool). true if simulating the device, false otherwise. 
+#   - super_sim: (bool). true if you do not want to open a virtual serial port
+#     to test your device code: 
+#   - super_sim_fr: (0 <= float <=1), describes the failure rate if super simming
+#     the device. 0 never fails to return the correct confirmation, 1 always fails 
+#     to return correct confirmation. 
+#   - baud_rate: (int) the baud rate of the serial connection. 
+#   - device_ID: the port-id of the device (perferably use the actual device-id, not 
+#     the alias to something like tty/ACM0 since those can change.)
+#   - fake_device_ID: the device id if simming using the virtual serial port (socat)
+#   - time_out: (float) time the serial connection will wait for the requested 
+#.    bytes. 
+#   - read_time: (float) How long the host will watch the connection for a valid
+#     confirmation after sending a message. 
+#   - hb_send_msg: (str) the message the host should send for a heart beat to the
+#     device. 
+#   - hb_receive_mesg: (str) the message the host should receive for a heart beat
+#     from the device. 
+#   - NOTE: the hb_send_msg and hb_receive_msg key-value pairs are included so that
+#     the host can expect a different confirmation message that is not identical 
+#     to the message rthat is sent. (i.e. so developers can use common heart-beat 
+#     patterns like "ping" and "pong")
+#--------------------------------------------------------------------------------
+enabled_devices = []
+
+[advanced_communication]
+retries           = 3
+connection_cycles = 1
+power_cycles      = 1
+
+[devices.put_device_name_here]
+sim               = false
+super_sim         = true
+super_sim_fr      = 0.0
+baud_rate         = 115200
+device_ID         = ""
+fake_device_ID    = ""
+time_out          = 1.0
+read_time         = 1.0
+hb_send_msg       = "ping"
+hb_receive_msg    = "pong"
+

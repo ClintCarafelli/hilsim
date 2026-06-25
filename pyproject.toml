@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hilsim"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Hardware-in-the-Loop / Software-in-the-Loop simulation framework"
 readme = "README.md"
 requires-python = ">=3.10"

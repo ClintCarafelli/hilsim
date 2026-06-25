@@ -6,7 +6,9 @@ designed for software/hardware testing, deployment, and development.
 pip install hilsim
 
 ## Quick Start
-See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. 
+See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. hilsim has two commands to aid the developer: 
+- `hilsim create <project_name>`: This automatically generates the project scaffolding in the current directory under `<project_name>` 
+- `hilsim run`: This runs the project (i.e. builds all of the devices and runs the main function). It must be ran from the root directory of the project. 
 
 ## How It Works
 hilsim generates a project structure where the developer has four main tasks: 

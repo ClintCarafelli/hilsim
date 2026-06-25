@@ -111,3 +111,12 @@ class DataManager:
         if not self.file.closed:
             self.file.flush()
             self.file.close()
+
+    def convert_data_to_str_iterable(self, data: dict, time_val: float) -> list: 
+        """convert nested dictonaries of data for printing to rich table"""
+        data_row = []
+        for measurements in data.values(): 
+            for variable in measurements.values(): 
+                data_row.append(str(variable.value))
+        data_row.append(str(time_val))
+        return data_row

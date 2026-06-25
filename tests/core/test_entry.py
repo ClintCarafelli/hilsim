@@ -203,7 +203,7 @@ def test_run() -> None:
         ) as mock_build_table,
         patch("hilsim.core.entry.DataManager") as mock_data_manager,
         patch("hilsim.core.entry.threading.Thread") as mock_threading,
-        patch("hilsim.core.entry.importlib.import_module") as mock_importer,
+        patch("hilsim.core.entry.import_user_main") as mock_importer,
     ):
         run(Path("root"))
         mock_log_manager.assert_called_once()
@@ -217,7 +217,7 @@ def test_run() -> None:
         _, kwargs = mock_threading.call_args
         assert kwargs["daemon"] is True
         mock_threading.return_value.start.assert_called_once()
-        mock_importer.assert_called_once_with("main")
+        mock_importer.assert_called_once_with(Path("root"))
         mock_importer.return_value.main.assert_called_once()
 
 

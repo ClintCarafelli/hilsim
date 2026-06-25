@@ -1,13 +1,11 @@
 import importlib
 import logging
-import os
 import threading
 import time
 from pathlib import Path
 from typing import Any
 
 from hilsim.core.builders import BuildComponents
-# from hilsim.core.actuators import build_actuators
 from hilsim.core.file_manager import DataManager, LogManager
 from hilsim.core.i2c_bus import I2CBus
 from hilsim.core.load_toml import LoadTOML
@@ -82,6 +80,13 @@ def build_table(sensor_manager: SensorManager) -> tuple[Table, list, list]:
     table.add_section()
     return table, top_header, bottom_header
 
+def import_user_main(project_path: Path): 
+    """Import the main module that contains the developer's main function"""
+    spec = importlib.util.spec_from_file_location("main", project_path / "main.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
 def background_dynamics(world_state: WorldState, actuators: dict) -> None:
     """Create the background dynamics of the system"""
     start_time = time.time()
@@ -137,7 +142,7 @@ def run(root: Path) -> None:
     )
     bdt.start()
 
-    user_main = importlib.import_module("main")
+    user_main = import_user_main(root)
     user_main.main(ctx)
 
 

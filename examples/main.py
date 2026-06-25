@@ -2,18 +2,15 @@
 
 import time
 
-from rich.console import Console
-from rich.table import Table
 
-
-def convert_to_str_iterable(data: dict, time_val: float) -> list: 
-    """convert nested dictonaries of data for printing to rich table"""
-    data_row = []
-    for measurements in data.values(): 
-        for variable in measurements.values(): 
-            data_row.append(str(variable.value))
-    data_row.append(str(time_val))
-    return data_row
+#def convert_data_to_str_iterable(data: dict, time_val: float) -> list: 
+#    """convert nested dictonaries of data for printing to rich table"""
+#    data_row = []
+#    for measurements in data.values(): 
+#        for variable in measurements.values(): 
+#            data_row.append(str(variable.value))
+#    data_row.append(str(time_val))
+#    return data_row
 
 
 def main(ctx): 
@@ -36,12 +33,12 @@ def main(ctx):
 
     start_time = time.time()
 
-    while True: 
+    while time.time() - start_time < 6: 
         now = time.time()
         data, time_val = sensor_manager.read_all()
 
         data_manager.add_data_to_file(data, time_val)
-        rich_table.add_row(*convert_to_str_iterable(data, time_val))
+        rich_table.add_row(*data_manager.convert_data_to_str_iterable(data, time_val))
         console.print(rich_table)
         sensor_tracker.track(data)
 
@@ -56,4 +53,4 @@ def main(ctx):
             opened = False
             injection_complete = True
 
-        time.sleep(0.25)
+        time.sleep(0.2)

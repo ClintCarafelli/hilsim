@@ -1,6 +1,5 @@
 # hilsim
-A Python package for rapid hardware-in-the-loop (HIL) and software-in-the-loop (SIL) simulation, 
-designed for software/hardware testing, deployment, and development. 
+A Python package for rapid hardware-in-the-loop (HITL) and software-in-the-loop (SITL) simulation, designed for software/hardware prototyping, testing, and development. 
 
 ## Installation
 pip install hilsim

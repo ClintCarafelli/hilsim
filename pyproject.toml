@@ -27,3 +27,6 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "hilsim" = ["scaffold/templates/**/*"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov"]

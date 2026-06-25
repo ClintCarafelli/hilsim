@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A Hardware-in-the-Loop / Software-in-the-Loop simulation framework"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = {file = "LICENSE"}
 authors = [
     {name = "Clint Carafelli"}
 ]

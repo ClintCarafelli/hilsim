@@ -62,7 +62,6 @@ class BuildComponents:
         """Construct instances of drivers"""
         drivers = {}
         for sensor in self.sensor_config["sensor_params"]["enabled_sensors"]:
-
             # Query important parameters
             sensor_config = self.sensor_config["sensors"][sensor]
             fake_sensor_name = sensor_config["fake_sensor_name"]

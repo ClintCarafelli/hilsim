@@ -17,6 +17,7 @@ dependencies = [
     "jinja2",
     "tomllib; python_version < '3.11'",
     "pyserial",
+    "rich",
 ]
 
 [project.scripts]

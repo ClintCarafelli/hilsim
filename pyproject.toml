@@ -29,4 +29,4 @@ where = ["src"]
 "hilsim" = ["scaffold/templates/**/*"]
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov"]
+dev = ["pytest", "pytest-cov", "rich"]

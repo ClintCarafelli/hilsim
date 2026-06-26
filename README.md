@@ -5,7 +5,7 @@ hilsim is a lightweight, hardware-agnostic framework for rapidly scaffolding and
 pip install hilsim
 
 ## Quick Start
-See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. The CO2Examples folder contains information about the package architecture and a basic example of a fluid injection system for a plant habitat. hilsim has two commands to aid the developer: 
+See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. The CO2Example folder contains information about the package architecture and a basic example of a fluid injection system for a plant habitat. hilsim has two commands to aid the developer: 
 - `hilsim create <project_name>`: This automatically generates the project scaffolding in the current directory under `<project_name>` 
 - `hilsim run`: This runs the project (i.e. builds all of the devices and runs the main function). It must be ran from the root directory of the project. 
 

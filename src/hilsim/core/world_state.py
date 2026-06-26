@@ -19,6 +19,7 @@ class WorldState:
         """Apply a change to the state variables with persistent effect"""
         with self._lock:
             if variable not in self.state:
+                print(f"Incorrect suffix on effect_ method. '{variable}' is not a known world_state variable.")
                 raise KeyError(f"Unknown world state variable: '{variable}'")
             self._memory[variable] += delta
 
@@ -26,6 +27,7 @@ class WorldState:
         """Get transient contributions to state variables"""
         with self._lock:
             if variable not in self.state:
+                print(f"Incorrect suffix on effect_ method. '{variable}' is not a known world_state variable.")
                 raise KeyError(f"Unknown world state variable: '{variable}'")
 
             self._contributions[variable][name] = contribution

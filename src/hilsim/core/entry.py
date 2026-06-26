@@ -57,7 +57,10 @@ def build_sensor_stack(
     sensor_config: dict, i2c_bus: Any, sensor_drivers: dict
 ) -> tuple:
     """Initialize sensor manager and sensor tracker"""
-    sensor_manager = SensorManager(sensor_config, i2c_bus, sensor_drivers, True)
+    sensor_manager = SensorManager(sensor_config, 
+                                   i2c_bus, 
+                                   sensor_drivers, 
+                                   sensor_config["sensor_params"]["skip_failed_init"])
     sensor_tracker = SensorTracker(sensor_config)
     sensor_manager.initialize_all()
     return sensor_manager, sensor_tracker

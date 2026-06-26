@@ -1,8 +1,5 @@
 """Anything related to the ina260 sensor"""
 
-from typing import Any
-from random import random
-
 from hilsim.core.sensors import DriverBase, SensorBase
 from hilsim.core.world_state import WorldState
 

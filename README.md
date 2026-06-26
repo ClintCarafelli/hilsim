@@ -1,11 +1,11 @@
 # hilsim
-A Python package for rapid hardware-in-the-loop (HITL) and software-in-the-loop (SITL) simulation.
+hilsim is a lightweight, hardware-agnostic framework for rapidly scaffolding and running HITL/SITL simulations — letting you test host software and hardware interfaces without requiring physical peripherals.
 
 ## Installation
 pip install hilsim
 
 ## Quick Start
-See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. hilsim has two commands to aid the developer: 
+See the [examples](examples/) folder for a host of configuration files, sensors, and actuators. The CO2Examples folder contains information about the package architecture and a basic example of a fluid injection system for a plant habitat. hilsim has two commands to aid the developer: 
 - `hilsim create <project_name>`: This automatically generates the project scaffolding in the current directory under `<project_name>` 
 - `hilsim run`: This runs the project (i.e. builds all of the devices and runs the main function). It must be ran from the root directory of the project. 
 

@@ -1,0 +1,7 @@
+[variables]
+CO2                = {initial = 210, units = "ppm"}
+relative_humidity  = {initial = 60, units = "percent"}
+temperature        = {initial = 24, units = "C"}
+current            = {initial = 0, units = "mA"}
+voltage            = {initial = 12, units = "V"}
+power              = {initial = 0, units = "mW"}

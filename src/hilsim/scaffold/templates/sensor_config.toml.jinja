@@ -90,8 +90,9 @@
 #--------------------------------------------------------------------------------
 
 [sensor_params]
-enabled_sensors = []
-sim_all         = true
+enabled_sensors   = []
+sim_all           = true
+skip_failed_init  = false
 
 [sensor_error_program]
 first_i2c_cycle    = 4 
@@ -100,9 +101,6 @@ first_power_cycle  = 6
 second_power_cycle = 7 
 dead               = 8
 
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-#                                    SENSORS
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 [sensors.sensor_1]
 description             = "brief description of this sensor"
 num_measurements        =  1
@@ -115,8 +113,8 @@ sim_fail_initialization = false
 [[sensors.sensor_1.readings]]
 name     = "variable_name"
 units    = "units"
-max      = 0.0
 min      = 0.0
+max      = 0.0
 noise    = 0.0
 drift    = 0.0
 

@@ -1,0 +1,79 @@
+[sensor_params]
+enabled_sensors   = ["SCD30", "INA260"]
+sim_all           = true
+skip_failed_init  = false
+
+[sensor_error_program]
+first_i2c_cycle    = 4 
+second_i2c_cycle   = 5 
+first_power_cycle  = 6 
+second_power_cycle = 7 
+dead               = 8
+
+[sensors.SCD30]
+description             = "reads CO2"
+num_measurements        =  1
+driver_name             = "SCD30Driver"
+fake_sensor_name        = "FakeSCD30"
+sim                     = true
+failure_rate            = 0.02
+sim_fail_initialization = false
+
+[[sensors.SCD30.readings]]
+name     = "CO2"
+units    = "ppm"
+min      = 0
+max      = 40000
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.SCD30.readings]]
+name     = "relative_humidity"
+units    = "percent"
+min      = 0
+max      = 95
+noise    = 0.1
+drift    = 0.1
+
+[[sensors.SCD30.readings]]
+name     = "temperature"
+units    = "C"
+min      = 0
+max      = 50
+accuracy = 0.4
+noise    = 0.1
+drift    = 0.1
+
+[sensors.INA260]
+description             = "reads current"
+num_measurements        =  1
+driver_name             = "INA260Driver"
+fake_sensor_name        = "FakeINA260"
+sim                     = true
+failure_rate            = 0.02
+sim_fail_initialization = false
+
+[[sensors.INA260.readings]]
+name     = "voltage"
+units    = "V"
+min      = 0
+max      = 40
+noise    = 0.0
+drift    = 0.0
+
+[[sensors.INA260.readings]]
+name     = "current"
+units    = "mA"
+min      = 0
+max      = 15000
+noise    = 0.0
+drift    = 0.0
+
+[[sensors.INA260.readings]]
+name     = "power"
+units    = "mW"
+min      = 0
+max      = 600000
+noise    = 0.0
+drift    = 0.0
+

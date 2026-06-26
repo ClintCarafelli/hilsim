@@ -47,7 +47,7 @@ class FakeSerial:
         if random() < self.failure_rate:
             # Don't respond right away as if you do this leads to a huge 
             # concatenation issue for an error string and takes forever.
-            time.sleep(self.read_time * 0.25)
+            time.sleep(self.read_time * 0.01)
             return "".encode()
         if self.hb_send_msg.encode() in self.msg:
             self.return_msg = self.hb_receive_msg.encode()

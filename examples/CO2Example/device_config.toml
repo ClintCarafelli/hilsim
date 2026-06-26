@@ -1,0 +1,18 @@
+enabled_devices = ["RP2040"]
+
+[advanced_communication]
+retries           = 3
+connection_cycles = 1
+power_cycles      = 1
+
+[devices.RP2040]
+sim               = false
+super_sim         = true
+super_sim_fr      = 0.0
+baud_rate         = 115200
+device_ID         = "/dev/ttyACM0"
+fake_device_ID    = ""
+time_out          = 1.0
+read_time         = 0.1
+hb_send_msg       = "ping"
+hb_receive_msg    = "pong"

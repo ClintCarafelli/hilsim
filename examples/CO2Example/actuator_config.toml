@@ -1,0 +1,32 @@
+[Plants.settings]
+name = "Plants"
+driver = "Plants"
+device = "None"
+pin = "None"
+sim = true
+initial_state = "alive"
+states = ["dead", "alive"]
+
+[Plants.failure_sim]
+stuck_probability = 0
+cta_latency       = {distribution="normal", mean=0, std=0}
+
+[Plants.effects]
+CO2 = {effect_types = "t+p+s"}
+
+[Solenoid.settings]
+name = "Solenoid"
+driver = "CO2Solenoid"
+device = "RP2040"
+pin = 8
+sim = true
+initial_state = "off"
+states = ["on", "off"]
+
+[Solenoid.failure_sim]
+stuck_probability = 0.05
+cta_latency       = {distribution="normal", mean=10, std=3}
+
+[Solenoid.effects]
+CO2     = {effect_types = "t+p+s"}
+current = {effect_types = "t+s"}

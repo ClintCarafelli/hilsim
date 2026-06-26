@@ -1,11 +1,8 @@
 """Anything related to the SCD30 Sensor"""
 
-from typing import Any
 from datetime import datetime, timedelta
 from random import random
-from collections.abc import Iterable
 
-from hilsim.core.world_state import WorldState
 from hilsim.core.sensors import DriverBase, SensorBase
 
 # if sim=False, will import SCD30 from scd30_i2c
@@ -51,14 +48,14 @@ class SCD30Driver(DriverBase):
     def initialize_sim(self) -> None:
         """Initialize sim mode for an SCD30 driver"""
         self.device = self.fake_sensor
-        self.device.set_measurement_interval(2)
+        self.device.set_measurement_interval(0.1)
         self.device.start_periodic_measurement()
         
     def initialize_real(self) -> None:
         """Initialize real mode for an SCD30 Driver"""
         from scd30_i2c import SCD30  # type: ignore[import-not-found]
         self.device = SCD30()
-        self.device.set_measurement_interval(2)
+        self.device.set_measurement_interval(0.1)
         self.device.start_periodic_measurement()
 
     def form_vals_dict(self) -> dict: 

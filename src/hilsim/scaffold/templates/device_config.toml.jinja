@@ -32,24 +32,12 @@
 #     to the next task.
 #   - connection_cycles: (int) If the maximum number of retries have been hit and 
 #     the host has not received a valid confirmation, than the host will cycle 
-#     the connection in software. Note that these methods are dependent on the 
-#     capabilities of the host and this is currently only supported for the
-#     Raspberry Pi 4b. Submit a pull request to help generalize functionality
-#     across other common host devices. Please include a script that can 
-#     software cycle a serial connection and be ran as a subprocess from python. 
+#     the connection in software. Currently flagged, but actual cycling is not 
+#     supported but planned for a future release. 
 #   - power_cycles: (int) If the maximum number of connection cycles (software)
-#     cycles has been hit, then the connection will be power cycled. 
-#     #############################################################################
-#                                  !!! WARNING !!!
-#     This functionality is currently only supported on the Raspberry Pi 4b. 
-#     One of the hardware limitations of the 4b is that all four usb ports are 
-#     connected to the same power source, so it is impossible to cycle just one 
-#     connection, rather, anything connected to the USB ports WILL experience a 
-#     power cycle.
-#     #############################################################################
-#     To generalize this functionality to other common host devices, submit a pull
-#     request with a script that can power cycle a serial connection and be 
-#     ran as a subprocess from python.  
+#     cycles has been hit, then the connection will be power cycled. Currently
+#     flagged but actual power cycling is not supported but planned for a
+#     future release. 
 #
 # devices specific settings. 
 

@@ -12,7 +12,7 @@ import pytest
 def sensor_config() -> dict:
     """Create a dictonary that mimics the sensor_config.toml"""
     return {
-        "sensor_params": {"enabled_sensors": ["sensor_1", "sensor_2"], "sim_all": True},
+        "sensor_params": {"enabled_sensors": ["sensor_1", "sensor_2"], "sim_all": True, "skip_failed_init": True},
         "sensor_error_program": {
             "first_i2c_cycle": 4,
             "second_i2c_cycle": 5,

@@ -76,7 +76,7 @@ def test_readline_failure(mock_sleep: MagicMock, fake_serial_fail: FakeSerial) -
     """Test a readline failure (result is empty string encoded)"""
     result = fake_serial_fail.readline()
     assert result == "".encode()
-    mock_sleep.assert_called_once_with(fake_serial_fail.read_time * 0.25)
+    mock_sleep.assert_called_once_with(fake_serial_fail.read_time * 0.01)
 
 
 @patch("src.hilsim.core.controls.random")
